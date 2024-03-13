@@ -86,16 +86,22 @@ public class MainApp extends Application {
             rangeeField.clear();
         });
 
+        // Création du GridPane pour le formulaire
+        GridPane gridPane = new GridPane();
+        gridPane.setHgap(10);
+        gridPane.setVgap(5);
+        gridPane.addRow(0, new Label("Titre:"), titreField);
+        gridPane.addRow(1, new Label("Auteur:"), auteurField);
+        gridPane.addRow(2, new Label("Presentation:"), presentationField);
+        gridPane.addRow(3, new Label("Parution:"), parutionField);
+        gridPane.addRow(4, new Label("Colonne:"), colonneField);
+        gridPane.addRow(5, new Label("Rangee:"), rangeeField);
+
         // Création de la disposition
         VBox root = new VBox(10);
         root.getChildren().addAll(
                 menuBar,
-                new HBox(new Label("Titre:"), titreField),
-                new HBox(new Label("Auteur:"), auteurField),
-                new HBox(new Label("Presentation:"), presentationField),
-                new HBox(new Label("Parution:"), parutionField),
-                new HBox(new Label("Colonne:"), colonneField),
-                new HBox(new Label("Rangee:"), rangeeField),
+                gridPane,
                 addButton,
                 tableView
         );
