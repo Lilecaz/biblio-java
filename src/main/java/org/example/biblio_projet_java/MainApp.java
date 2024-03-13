@@ -19,6 +19,8 @@ public class MainApp extends Application {
         MenuItem menuItem3 = new MenuItem("Sauvegarder");
         MenuItem menuItem4 = new MenuItem("Sauvegarder sous...");
 
+        MenuItem menuItem5 = new MenuItem("Infos");
+
         // Création du menu
         Menu menu = new Menu("Fichier");
         menu.getItems().addAll(menuItem1, menuItem2);
@@ -27,7 +29,7 @@ public class MainApp extends Application {
         menu2.getItems().addAll(menuItem3, menuItem4);
 
         Menu menu3 = new Menu("About");
-        menu3.getItems().addAll();
+        menu3.getItems().addAll(menuItem5);
 
         // Création de la barre de menu et ajout du menu
         MenuBar menuBar = new MenuBar();
