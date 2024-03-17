@@ -60,12 +60,6 @@
                 <configuration>
                     <source>15</source>
                     <target>15</target>
-                    <compilerArgs>
-                        <arg>--module-path</arg>
-                        <arg>C:\Program Files\Java\javafx-sdk-17.0.10\lib</arg>
-                        <arg>--add-modules</arg>
-                        <arg>javafx.controls,javafx.fxml,javafx.graphics</arg>
-                    </compilerArgs>
                 </configuration>
             </plugin>
             <plugin>
