@@ -6,14 +6,11 @@ import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import org.example.biblio_projet_java.Bibliotheque;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 import java.io.File;
 
 public class MainApp extends Application {
+
+    private File currentFile;
 
     @Override
     public void start(Stage primaryStage) {
@@ -29,14 +26,29 @@ public class MainApp extends Application {
                     new FileChooser.ExtensionFilter("Fichiers XML", "*.xml"));
             File selectedFile = fileChooser.showOpenDialog(primaryStage);
             if (selectedFile != null) {
-                chargerFichierXML(selectedFile, tableView);
+                
+                currentFile = XMLFileManager.chargerFichierXML(selectedFile, tableView);
             }
         });
-
         MenuItem menuItem2 = new MenuItem("Quitter");
-        menuItem2.setOnAction(event -> primaryStage.close());
+        menuItem2.setOnAction(event -> {
+            currentFile = null;
+            tableView.getItems().clear();
+
+        });
 
         MenuItem menuItem3 = new MenuItem("Sauvegarder");
+        menuItem3.setOnAction(event -> {
+            if (currentFile != null) {
+                XMLFileManager.sauvegarderFichierXML(currentFile, tableView.getItems());
+            } else {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Information");
+                alert.setHeaderText(null);
+                alert.setContentText("Aucun fichier n'est actuellement ouvert.");
+                alert.showAndWait();
+            }
+        });
         MenuItem menuItem4 = new MenuItem("Sauvegarder sous...");
 
         MenuItem menuItem5 = new MenuItem("Infos");
@@ -64,19 +76,6 @@ public class MainApp extends Application {
         primaryStage.setTitle("Biblio");
         primaryStage.setScene(scene);
         primaryStage.show();
-    }
-
-    private void chargerFichierXML(File file, LivreTableView tableView) {
-        try {
-            JAXBContext context = JAXBContext.newInstance(Bibliotheque.class);
-            Unmarshaller unmarshaller = context.createUnmarshaller();
-            Bibliotheque bibliotheque = (Bibliotheque) unmarshaller.unmarshal(file);
-            bibliotheque.getLivre().forEach(tableView::ajouterLivre);
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Erreur lors du chargement du fichier XML.");
-            alert.showAndWait();
-        }
     }
 
     public static void main(String[] args) {
