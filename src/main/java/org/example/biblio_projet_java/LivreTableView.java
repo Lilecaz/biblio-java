@@ -1,64 +1,54 @@
 package org.example.biblio_projet_java;
 
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.scene.Node;
 import javafx.scene.control.*;
+import org.example.biblio_projet_java.Bibliotheque.*;
 
-public class LivreTableView extends TableView<Livre> {
-
-    private TableView<String[]> tableView;
+public class LivreTableView extends TableView<Bibliotheque.Livre> {
 
     public LivreTableView() {
-        tableView = new TableView<>();
-        tableView.setEditable(true);
+        setEditable(true);
 
         // Création des colonnes du tableau
-        TableColumn<String[], String> titreCol = new TableColumn<>("Titre");
-        TableColumn<String[], String> auteurCol = new TableColumn<>("Auteur");
-        TableColumn<String[], String> presentationCol = new TableColumn<>("Presentation");
-        TableColumn<String[], String> parutionCol = new TableColumn<>("Parution");
-        TableColumn<String[], String> colonneCol = new TableColumn<>("Colonne");
-        TableColumn<String[], String> rangeeCol = new TableColumn<>("Rangee");
+        TableColumn<Bibliotheque.Livre, String> titreCol = new TableColumn<>("Titre");
+        TableColumn<Bibliotheque.Livre, String> auteurCol = new TableColumn<>("Auteur");
+        TableColumn<Bibliotheque.Livre, String> presentationCol = new TableColumn<>("Presentation");
+        TableColumn<Bibliotheque.Livre, Integer> parutionCol = new TableColumn<>("Parution");
+        TableColumn<Bibliotheque.Livre, Short> colonneCol = new TableColumn<>("Colonne");
+        TableColumn<Bibliotheque.Livre, Short> rangeeCol = new TableColumn<>("Rangee");
 
         // Liaison des colonnes aux données
-        titreCol.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()[0]));
-        auteurCol.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()[1]));
-        presentationCol.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()[2]));
-        parutionCol.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()[3]));
-        colonneCol.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()[4]));
-        rangeeCol.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()[5]));
+        titreCol.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().getTitre()));
+        auteurCol.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(
+                data.getValue().getAuteur().getNom() + " " + data.getValue().getAuteur().getPrenom()));
+        presentationCol.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().getPresentation()));
+        parutionCol.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().getParution()));
+        colonneCol.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().getColonne()));
+        rangeeCol.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().getRangee()));
 
         // Ajout des colonnes au tableau
-        tableView.getColumns().addAll(titreCol, auteurCol, presentationCol, parutionCol, colonneCol, rangeeCol);
-
+        getColumns().addAll(titreCol, auteurCol, presentationCol, parutionCol, colonneCol, rangeeCol);
     }
 
-    public void ajouterLivre(String[] data) {
-        System.out.println("ajout String " + data);
-        tableView.getItems().add(data);
+    public void ajouterLivre(Bibliotheque.Livre livre) {
+        getItems().add(livre);
     }
 
-    public void supprimerLivre(String[] data) {
-        tableView.getItems().remove(data);
+    public void supprimerLivre(Bibliotheque.Livre livre) {
+        getItems().remove(livre);
     }
 
-    public void ajouterLivre(Livre livre) {
-        String[] data = new String[] {
-                livre.getTitre(),
-                livre.getAuteur().getNom() + " " + livre.getAuteur().getPrenom(),
-                livre.getPresentation(),
-                String.valueOf(livre.getParution()),
-                String.valueOf(livre.getColonne()),
-                String.valueOf(livre.getRangee())
-        };
-        tableView.getItems().add(data);
+    public void modifierLivre(Bibliotheque.Livre livre) {
+        getItems().set(getItems().indexOf(livre), livre);
     }
 
-    public void supprimerLivre(Livre livre) {
-        getItems().remove(livre); // Use getItems() for Livre type
+    public void afficherLivre(Bibliotheque.Livre livre) {
+        getSelectionModel().select(livre);
     }
 
-    public TableView<String[]> getTableView() {
-        return tableView;
+    public Node getTableView() {
+        return this;
     }
 
 }
