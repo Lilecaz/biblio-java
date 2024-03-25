@@ -9,6 +9,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import java.io.File;
+import java.time.LocalDate;
+import java.util.Optional;
 
 public class MainApp extends Application {
 
@@ -35,6 +37,30 @@ public class MainApp extends Application {
             currentFile = null;
             tableView.getItems().clear();
         });
+        MenuItem menuItem6 = new MenuItem("Exporter");
+        menuItem6.setOnAction(event -> {
+            if (!tableView.getItems().isEmpty()) { // Vérifie si la liste de livres n'est pas vide
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Exporter le document Word");
+        dialog.setHeaderText("Veuillez saisir le nom du document :");
+        dialog.setContentText("Nom du document:");
+
+        Optional<String> result = dialog.showAndWait();
+        result.ifPresent(name -> {
+            WordExporter.exportToWord(tableView.getItems(), name, primaryStage);
+        });
+    } else {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Information");
+        alert.setHeaderText(null);
+        alert.setContentText("Aucun livre à exporter.");
+        alert.showAndWait();
+    }
+           
+        
+
+});
+        
 
         MenuItem menuItem3 = new MenuItem("Sauvegarder");
         menuItem3.setOnAction(event -> {
@@ -53,7 +79,7 @@ public class MainApp extends Application {
         MenuItem menuItem5 = new MenuItem("Infos");
 
         Menu menu = new Menu("Fichier");
-        menu.getItems().addAll(menuItem1, menuItem2);
+        menu.getItems().addAll(menuItem1, menuItem2,menuItem6);
 
         Menu menu2 = new Menu("Edition");
         menu2.getItems().addAll(menuItem3, menuItem4);

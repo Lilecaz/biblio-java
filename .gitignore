@@ -5,3 +5,5 @@
 /.vscode/
 
 .gitignore
+pom.xml
+
