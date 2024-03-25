@@ -2,7 +2,6 @@ package org.example.biblio_projet_java;
 
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.time.LocalDate;
@@ -12,8 +11,7 @@ import org.example.biblio_projet_java.Bibliotheque.Livre;
 public class FormulaireLivre extends VBox {
 
     private TextField titreField;
-    private TextField auteurNomField;
-    private TextField auteurPrenomField;
+    private TextField auteurField;
     private TextField presentationField;
     private TextField parutionField;
     private TextField colonneField;
@@ -24,11 +22,8 @@ public class FormulaireLivre extends VBox {
         Label titreLabel = new Label("Titre: ");
         titreField = new TextField();
 
-        Label auteurNomLabel = new Label("Nom de l'auteur: ");
-        auteurNomField = new TextField();
-
-        Label auteurPrenomLabel = new Label("Prénom de l'auteur: ");
-        auteurPrenomField = new TextField();
+        Label auteurLabel = new Label("Auteur: ");
+        auteurField = new TextField();
 
         Label presentationLabel = new Label("Présentation: ");
         presentationField = new TextField();
@@ -62,10 +57,15 @@ public class FormulaireLivre extends VBox {
             if (validateFields() && !alreadyExists(tableView)) {
                 Livre nouveauLivre = new Livre();
                 nouveauLivre.setTitre(titreField.getText());
-                Livre.Auteur auteur = new Livre.Auteur();
-                auteur.setNom(auteurNomField.getText());
-                auteur.setPrenom(auteurPrenomField.getText());
-                nouveauLivre.setAuteur(auteur);
+                String[] auteur = auteurField.getText().split(" ");
+                Livre.Auteur auteurObj = new Livre.Auteur();
+                if (auteur.length > 1) {
+                    auteurObj.setNom(auteur[0]);
+                    auteurObj.setPrenom(auteur[1]);
+                } else {
+                    auteurObj.setNom(auteur[0]);
+                }
+                nouveauLivre.setAuteur(auteurObj);
                 nouveauLivre.setPresentation(presentationField.getText());
                 nouveauLivre.setParution(Integer.parseInt(parutionField.getText()));
                 nouveauLivre.setColonne(Short.parseShort(colonneField.getText()));
@@ -77,26 +77,17 @@ public class FormulaireLivre extends VBox {
             }
         });
 
-        HBox titreBox = new HBox(titreLabel, titreField);
-        HBox auteurNomBox = new HBox(auteurNomLabel, auteurNomField);
-        HBox auteurPrenomBox = new HBox(auteurPrenomLabel, auteurPrenomField);
-        HBox presentationBox = new HBox(presentationLabel, presentationField);
-        HBox parutionBox = new HBox(parutionLabel, parutionField);
-        HBox colonneBox = new HBox(colonneLabel, colonneField);
-        HBox rangeeBox = new HBox(rangeeLabel, rangeeField);
-
         GridPane gridPane = new GridPane();
         gridPane.setVgap(10);
         gridPane.setHgap(10);
 
         gridPane.addRow(0, titreLabel, titreField);
-        gridPane.addRow(1, auteurNomLabel, auteurNomField);
-        gridPane.addRow(2, auteurPrenomLabel, auteurPrenomField);
-        gridPane.addRow(3, presentationLabel, presentationField);
-        gridPane.addRow(4, parutionLabel, parutionField);
-        gridPane.addRow(5, colonneLabel, colonneField);
-        gridPane.addRow(6, rangeeLabel, rangeeField);
-        gridPane.addRow(7, ajouterButton);
+        gridPane.addRow(1, auteurLabel, auteurField);
+        gridPane.addRow(2, presentationLabel, presentationField);
+        gridPane.addRow(3, parutionLabel, parutionField);
+        gridPane.addRow(4, colonneLabel, colonneField);
+        gridPane.addRow(5, rangeeLabel, rangeeField);
+        gridPane.addRow(6, ajouterButton);
 
         this.getChildren().add(gridPane);
 
@@ -104,10 +95,9 @@ public class FormulaireLivre extends VBox {
     }
 
     private boolean validateFields() {
-        if (titreField.getText().isEmpty() || auteurNomField.getText().isEmpty() ||
-                auteurPrenomField.getText().isEmpty() || presentationField.getText().isEmpty() ||
-                parutionField.getText().isEmpty() || colonneField.getText().isEmpty() ||
-                rangeeField.getText().isEmpty()) {
+        if (titreField.getText().isEmpty() || auteurField.getText().isEmpty() ||
+                presentationField.getText().isEmpty() || parutionField.getText().isEmpty() ||
+                colonneField.getText().isEmpty() || rangeeField.getText().isEmpty()) {
             showAlert("Tous les champs sont obligatoires.");
             return false;
         }
@@ -133,11 +123,9 @@ public class FormulaireLivre extends VBox {
         return true;
     }
 
-
     private void clearFields() {
         titreField.clear();
-        auteurNomField.clear();
-        auteurPrenomField.clear();
+        auteurField.clear();
         presentationField.clear();
         parutionField.clear();
         colonneField.clear();
@@ -158,8 +146,8 @@ public class FormulaireLivre extends VBox {
 
         for (Livre livre : tableView.getItems()) {
             if (livre.getTitre().equals(nomLivre) &&
-                    livre.getAuteur().getNom().equals(auteurNomField.getText()) &&
-                    livre.getAuteur().getPrenom().equals(auteurPrenomField.getText()) &&
+                    livre.getAuteur().getNom().equals(auteurField.getText().split(" ")[0]) &&
+                    livre.getAuteur().getPrenom().equals(auteurField.getText().split(" ")[1]) &&
                     livre.getParution() == anneeParution) {
                 showAlert("Ce livre existe déjà dans la bibliothèque.");
                 return true;
