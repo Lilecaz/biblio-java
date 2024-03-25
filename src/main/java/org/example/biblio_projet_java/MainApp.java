@@ -1,14 +1,14 @@
 package org.example.biblio_projet_java;
+
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import java.io.File;
-
-
 
 public class MainApp extends Application {
 
@@ -64,13 +64,15 @@ public class MainApp extends Application {
         MenuBar menuBar = new MenuBar();
         menuBar.getMenus().addAll(menu, menu2, menu3);
 
-        HBox root = new HBox(); // Utiliser un HBox comme conteneur principal
-        VBox formulaireLivreBox = new VBox(formulaireLivre);
+        BorderPane root = new BorderPane(); // Utiliser un BorderPane comme conteneur principal
+
+        root.setTop(menuBar); // Placer le menuBar en haut
+
+        HBox formulaireLivreBox = new HBox(formulaireLivre);
         VBox tableViewBox = new VBox(tableView);
 
-        root.getChildren().addAll(
-                tableViewBox,
-                formulaireLivreBox); // Inverser l'ordre d'ajout
+        root.setCenter(tableViewBox);
+        root.setRight(formulaireLivreBox); // Placer le formulaire à droite
 
         Scene scene = new Scene(root, 800, 600);
         scene.getStylesheets().add(getClass().getResource("/styles.css").toExternalForm());
