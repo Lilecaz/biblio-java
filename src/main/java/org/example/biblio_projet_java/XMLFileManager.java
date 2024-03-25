@@ -1,6 +1,8 @@
 package org.example.biblio_projet_java;
 
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -10,7 +12,9 @@ import javax.xml.bind.Unmarshaller;
 import org.example.biblio_projet_java.Bibliotheque.Livre;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 public class XMLFileManager {
 
@@ -36,24 +40,54 @@ public class XMLFileManager {
     public static File sauvegarderFichierXML(File file, List<Livre> livres) {
         try {
             JAXBContext context = JAXBContext.newInstance(Bibliotheque.class);
-            Unmarshaller unmarshaller = context.createUnmarshaller();
-            Bibliotheque bibliotheque = (Bibliotheque) unmarshaller.unmarshal(file);
-
-            // Supprimer les anciens livres
-            bibliotheque.getLivre().clear();
-
-            // Ajouter les nouveaux livres
-            bibliotheque.getLivre().addAll(livres);
-
             Marshaller marshaller = context.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-            marshaller.marshal(bibliotheque, file);
-            return file; // Renvoyer le fichier sauvegardé
-        } catch (JAXBException e) {
+
+            Bibliotheque bibliotheque = new Bibliotheque();
+            bibliotheque.getLivre().addAll(livres);
+
+            if (file.exists()) {
+                // Demander à l'utilisateur s'il souhaite remplacer le fichier existant
+                Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
+                confirmAlert.setTitle("Confirmation");
+                confirmAlert.setHeaderText(null);
+                confirmAlert.setContentText("Le fichier sélectionné existe déjà. Voulez-vous le remplacer ?");
+                ButtonType yesButton = new ButtonType("Oui", ButtonBar.ButtonData.YES);
+                ButtonType noButton = new ButtonType("Non", ButtonBar.ButtonData.NO);
+                confirmAlert.getButtonTypes().setAll(yesButton, noButton);
+
+                Optional<ButtonType> result = confirmAlert.showAndWait();
+                if (result.isPresent() && result.get() == yesButton) {
+                    marshaller.marshal(bibliotheque, file);
+                    return file;
+                } else {
+                    // L'utilisateur a annulé l'opération, retourner null
+                    return null;
+                }
+            } else {
+                // Le fichier n'existe pas, créer un nouveau fichier
+                if (file.createNewFile()) {
+                    marshaller.marshal(bibliotheque, file);
+                    return file;
+                } else {
+                    // Erreur lors de la création du fichier, afficher une alerte
+                    Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+                    errorAlert.setTitle("Erreur");
+                    errorAlert.setHeaderText(null);
+                    errorAlert.setContentText("Erreur lors de la création du fichier XML.");
+                    errorAlert.showAndWait();
+                    return null;
+                }
+            }
+        } catch (IOException | JAXBException e) {
             e.printStackTrace();
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Erreur lors de la sauvegarde du fichier XML.");
+            // Afficher une alerte en cas d'erreur
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Erreur");
+            alert.setHeaderText(null);
+            alert.setContentText("Erreur lors de la sauvegarde du fichier XML.");
             alert.showAndWait();
-            return null; // En cas d'erreur, renvoyer null
+            return null;
         }
     }
 
