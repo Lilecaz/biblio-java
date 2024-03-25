@@ -1,0 +1,21 @@
+/* Style pour le formulaire */
+.formulaire {
+    -fx-padding: 10px;
+    -fx-spacing: 10px;
+}
+
+/* Style pour les étiquettes */
+.formulaire .label {
+    -fx-font-weight: bold;
+}
+
+/* Style pour les champs de texte */
+.formulaire .text-field {
+    -fx-pref-width: 200px;
+}
+
+/* Style pour les boutons */
+.formulaire .button {
+    -fx-min-width: 100px;
+}
+

@@ -1,6 +1,8 @@
 package org.example.biblio_projet_java;
 
 import javafx.scene.control.*;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.time.LocalDate;
@@ -19,36 +21,36 @@ public class FormulaireLivre extends VBox {
     private Button ajouterButton;
 
     public FormulaireLivre(LivreTableView tableView) {
+        Label titreLabel = new Label("Titre: ");
         titreField = new TextField();
-        titreField.setPromptText("Titre");
 
+        Label auteurNomLabel = new Label("Nom de l'auteur: ");
         auteurNomField = new TextField();
-        auteurNomField.setPromptText("Nom de l'auteur");
 
+        Label auteurPrenomLabel = new Label("Prénom de l'auteur: ");
         auteurPrenomField = new TextField();
-        auteurPrenomField.setPromptText("Prénom de l'auteur");
 
+        Label presentationLabel = new Label("Présentation: ");
         presentationField = new TextField();
-        presentationField.setPromptText("Présentation");
 
+        Label parutionLabel = new Label("Parution: ");
         parutionField = new TextField();
-        parutionField.setPromptText("Parution");
         parutionField.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("\\d*")) {
                 parutionField.setText(newValue.replaceAll("[^\\d]", ""));
             }
         });
 
+        Label colonneLabel = new Label("Colonne: ");
         colonneField = new TextField();
-        colonneField.setPromptText("Colonne");
         colonneField.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("\\d*")) {
                 colonneField.setText(newValue.replaceAll("[^\\d]", ""));
             }
         });
 
+        Label rangeeLabel = new Label("Rangée: ");
         rangeeField = new TextField();
-        rangeeField.setPromptText("Rangée");
         rangeeField.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("\\d*")) {
                 rangeeField.setText(newValue.replaceAll("[^\\d]", ""));
@@ -58,7 +60,6 @@ public class FormulaireLivre extends VBox {
         ajouterButton = new Button("Ajouter");
         ajouterButton.setOnAction(event -> {
             if (validateFields() && !alreadyExists(tableView)) {
-                // Création d'un nouvel objet Livre avec les données du formulaire
                 Livre nouveauLivre = new Livre();
                 nouveauLivre.setTitre(titreField.getText());
                 Livre.Auteur auteur = new Livre.Auteur();
@@ -70,16 +71,36 @@ public class FormulaireLivre extends VBox {
                 nouveauLivre.setColonne(Short.parseShort(colonneField.getText()));
                 nouveauLivre.setRangee(Short.parseShort(rangeeField.getText()));
 
-                // Ajout du nouveau livre à la table
                 tableView.ajouterLivre(nouveauLivre);
 
-                // Effacement des champs du formulaire
                 clearFields();
             }
         });
 
-        this.getChildren().addAll(titreField, auteurNomField, auteurPrenomField, presentationField,
-                parutionField, colonneField, rangeeField, ajouterButton);
+        HBox titreBox = new HBox(titreLabel, titreField);
+        HBox auteurNomBox = new HBox(auteurNomLabel, auteurNomField);
+        HBox auteurPrenomBox = new HBox(auteurPrenomLabel, auteurPrenomField);
+        HBox presentationBox = new HBox(presentationLabel, presentationField);
+        HBox parutionBox = new HBox(parutionLabel, parutionField);
+        HBox colonneBox = new HBox(colonneLabel, colonneField);
+        HBox rangeeBox = new HBox(rangeeLabel, rangeeField);
+
+        GridPane gridPane = new GridPane();
+        gridPane.setVgap(10);
+        gridPane.setHgap(10);
+
+        gridPane.addRow(0, titreLabel, titreField);
+        gridPane.addRow(1, auteurNomLabel, auteurNomField);
+        gridPane.addRow(2, auteurPrenomLabel, auteurPrenomField);
+        gridPane.addRow(3, presentationLabel, presentationField);
+        gridPane.addRow(4, parutionLabel, parutionField);
+        gridPane.addRow(5, colonneLabel, colonneField);
+        gridPane.addRow(6, rangeeLabel, rangeeField);
+        gridPane.addRow(7, ajouterButton);
+
+        this.getChildren().add(gridPane);
+
+        this.getStyleClass().add("formulaire");
     }
 
     private boolean validateFields() {
@@ -111,6 +132,7 @@ public class FormulaireLivre extends VBox {
 
         return true;
     }
+
 
     private void clearFields() {
         titreField.clear();
