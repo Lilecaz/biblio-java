@@ -1,12 +1,14 @@
 package org.example.biblio_projet_java;
-
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import java.io.File;
+
+
 
 public class MainApp extends Application {
 
@@ -15,7 +17,6 @@ public class MainApp extends Application {
     @Override
     public void start(Stage primaryStage) {
         LivreTableView tableView = new LivreTableView();
-
         FormulaireLivre formulaireLivre = new FormulaireLivre(tableView);
 
         MenuItem menuItem1 = new MenuItem("Ouvrir");
@@ -26,7 +27,6 @@ public class MainApp extends Application {
                     new FileChooser.ExtensionFilter("Fichiers XML", "*.xml"));
             File selectedFile = fileChooser.showOpenDialog(primaryStage);
             if (selectedFile != null) {
-                
                 currentFile = XMLFileManager.chargerFichierXML(selectedFile, tableView);
             }
         });
@@ -34,7 +34,6 @@ public class MainApp extends Application {
         menuItem2.setOnAction(event -> {
             currentFile = null;
             tableView.getItems().clear();
-
         });
 
         MenuItem menuItem3 = new MenuItem("Sauvegarder");
@@ -65,13 +64,15 @@ public class MainApp extends Application {
         MenuBar menuBar = new MenuBar();
         menuBar.getMenus().addAll(menu, menu2, menu3);
 
-        VBox root = new VBox(10);
-        root.getChildren().addAll(
-                menuBar,
-                formulaireLivre,
-                tableView);
+        HBox root = new HBox(); // Utiliser un HBox comme conteneur principal
+        VBox formulaireLivreBox = new VBox(formulaireLivre);
+        VBox tableViewBox = new VBox(tableView);
 
-        Scene scene = new Scene(root, 600, 400);
+        root.getChildren().addAll(
+                tableViewBox,
+                formulaireLivreBox); // Inverser l'ordre d'ajout
+
+        Scene scene = new Scene(root, 800, 600);
         scene.getStylesheets().add(getClass().getResource("/styles.css").toExternalForm());
 
         primaryStage.setTitle("Biblio");
