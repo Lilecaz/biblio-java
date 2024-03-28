@@ -18,7 +18,6 @@ import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.apache.poi.xwpf.usermodel.XWPFHeader;
 
-
 public class WordExporter {
     public static void exportToWord(List<Livre> livres, String titreDocument, Stage primaryStage) {
         // Créer un document Word
@@ -32,19 +31,38 @@ public class WordExporter {
         headerRun.addBreak();
         headerRun.setText("Exporté le : " + LocalDate.now());
 
-        // Ajouter un sommaire
+        // Créer le sommaire
         XWPFParagraph summaryParagraph = document.createParagraph();
         XWPFRun summaryRun = summaryParagraph.createRun();
         summaryRun.setText("Sommaire");
         summaryRun.addBreak();
 
-        // Ajouter les données de la bibliothèque dans le document
+        // Ajouter les titres des livres au sommaire
         for (Livre livre : livres) {
+            summaryRun.setText("Titre: " + livre.getTitre());
+            summaryRun.addBreak();
+        }
+
+        // Ajouter les détails de chaque livre sur une nouvelle page
+        for (Livre livre : livres) {
+            // Ajouter un saut de page avant chaque description de livre
+            XWPFParagraph pageBreak = document.createParagraph();
+            pageBreak.setPageBreak(true);
+
+            // Créer une nouvelle page pour chaque livre avec sa description
             XWPFParagraph contentParagraph = document.createParagraph();
             XWPFRun contentRun = contentParagraph.createRun();
             contentRun.setText("Titre: " + livre.getTitre());
             contentRun.addBreak();
             contentRun.setText("Auteur: " + livre.getAuteur().getNom() + " " + livre.getAuteur().getPrenom());
+            contentRun.addBreak();
+            contentRun.setText("Parution: " + livre.getParution());
+            contentRun.addBreak();
+            contentRun.setText("Présentation: " + livre.getPresentation());
+            contentRun.addBreak();
+            contentRun.setText("Colonne: " + livre.getColonne());
+            contentRun.addBreak();
+            contentRun.setText("Rangée: " + livre.getRangee());
             contentRun.addBreak();
             // Ajoutez d'autres détails du livre selon vos besoins
         }
@@ -73,4 +91,3 @@ public class WordExporter {
         }
     }
 }
-
