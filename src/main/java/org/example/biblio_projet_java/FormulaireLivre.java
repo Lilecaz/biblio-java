@@ -3,7 +3,8 @@ package org.example.biblio_projet_java;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
-
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import java.time.LocalDate;
 
 import org.example.biblio_projet_java.Bibliotheque.Livre;
@@ -16,9 +17,18 @@ public class FormulaireLivre extends VBox {
     private TextField parutionField;
     private TextField colonneField;
     private TextField rangeeField;
+    private CheckBox empruntCheckBox;
+    private TextArea resumeArea;
+    private TextField lienField;
     private Button ajouterButton;
 
+    private ImageView previewImageView;
+
     public FormulaireLivre(LivreTableView tableView) {
+
+        previewImageView = new ImageView();
+        previewImageView.setFitWidth(200); // Ajustez la largeur de l'aperçu selon vos besoins
+        previewImageView.setPreserveRatio(true);
         Label titreLabel = new Label("Titre: ");
         titreField = new TextField();
 
@@ -52,6 +62,27 @@ public class FormulaireLivre extends VBox {
             }
         });
 
+        Label empruntLabel = new Label("Emprunt: ");
+        empruntCheckBox = new CheckBox();
+
+        Label resumeLabel = new Label("Résumé: ");
+        resumeArea = new TextArea();
+        resumeArea.setWrapText(true);
+        resumeArea.setPrefRowCount(3);
+
+        Label lienLabel = new Label("Lien: ");
+        lienField = new TextField();
+        lienField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.isEmpty()) {
+                Image image = new Image(newValue);
+                previewImageView.setImage(image);
+                System.out.println("Image chargée.");
+            } else {
+                // Effacer l'aperçu de l'image s'il n'y a pas de lien
+                previewImageView.setImage(null);
+            }
+        });
+
         ajouterButton = new Button("Ajouter");
         ajouterButton.setOnAction(event -> {
             if (validateFields() && !alreadyExists(tableView)) {
@@ -70,6 +101,9 @@ public class FormulaireLivre extends VBox {
                 nouveauLivre.setParution(Integer.parseInt(parutionField.getText()));
                 nouveauLivre.setColonne(Short.parseShort(colonneField.getText()));
                 nouveauLivre.setRangee(Short.parseShort(rangeeField.getText()));
+                nouveauLivre.setEmprunt(empruntCheckBox.isSelected());
+                nouveauLivre.setResume(resumeArea.getText());
+                nouveauLivre.setLien(lienField.getText());
 
                 tableView.ajouterLivre(nouveauLivre);
 
@@ -87,7 +121,11 @@ public class FormulaireLivre extends VBox {
         gridPane.addRow(3, parutionLabel, parutionField);
         gridPane.addRow(4, colonneLabel, colonneField);
         gridPane.addRow(5, rangeeLabel, rangeeField);
-        gridPane.addRow(6, ajouterButton);
+        gridPane.addRow(6, empruntLabel, empruntCheckBox);
+        gridPane.addRow(7, resumeLabel, resumeArea);
+        gridPane.addRow(8, lienLabel, lienField);
+        gridPane.addRow(9, ajouterButton);
+        gridPane.addRow(10, previewImageView);
 
         this.getChildren().add(gridPane);
 

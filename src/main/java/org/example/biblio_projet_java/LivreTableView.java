@@ -1,10 +1,13 @@
 package org.example.biblio_projet_java;
 
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.util.Callback;
+import javafx.util.converter.BooleanStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 import javafx.util.converter.ShortStringConverter;
 
@@ -21,6 +24,10 @@ public class LivreTableView extends TableView<Bibliotheque.Livre> {
         TableColumn<Bibliotheque.Livre, Integer> parutionCol = new TableColumn<>("Parution");
         TableColumn<Bibliotheque.Livre, Short> colonneCol = new TableColumn<>("Colonne");
         TableColumn<Bibliotheque.Livre, Short> rangeeCol = new TableColumn<>("Rangee");
+        TableColumn<Bibliotheque.Livre, Boolean> empruntCol = new TableColumn<>("Emprunt");
+        TableColumn<Bibliotheque.Livre, String> resumeCol = new TableColumn<>("Résumé");
+        TableColumn<Bibliotheque.Livre, String> lienCol = new TableColumn<>("Lien");
+
         TableColumn<Bibliotheque.Livre, Void> deleteCol = new TableColumn<>("");
 
         // Liaison des colonnes aux données
@@ -31,6 +38,10 @@ public class LivreTableView extends TableView<Bibliotheque.Livre> {
         parutionCol.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().getParution()));
         colonneCol.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().getColonne()));
         rangeeCol.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().getRangee()));
+        empruntCol.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().isEmprunt()));
+        resumeCol.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().getResume()));
+        lienCol.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().getLien()));
+
         Callback<TableColumn<Bibliotheque.Livre, Void>, TableCell<Bibliotheque.Livre, Void>> cellFactory = new Callback<>() {
             @Override
             public TableCell<Bibliotheque.Livre, Void> call(final TableColumn<Bibliotheque.Livre, Void> param) {
@@ -95,8 +106,21 @@ public class LivreTableView extends TableView<Bibliotheque.Livre> {
             event.getRowValue().setRangee(event.getNewValue());
         });
 
+        empruntCol.setCellFactory(CheckBoxTableCell.forTableColumn(empruntCol));
+        empruntCol.setCellValueFactory(cellData -> new SimpleBooleanProperty(cellData.getValue().isEmprunt()));
+        resumeCol.setCellFactory(TextFieldTableCell.forTableColumn());
+        resumeCol.setOnEditCommit(event -> {
+            event.getRowValue().setResume(event.getNewValue());
+        });
+
+        lienCol.setCellFactory(TextFieldTableCell.forTableColumn());
+        lienCol.setOnEditCommit(event -> {
+            event.getRowValue().setLien(event.getNewValue());
+        });
+
         // Ajout des colonnes au tableau
-        getColumns().addAll(titreCol, auteurCol, presentationCol, parutionCol, colonneCol, rangeeCol, deleteCol);
+        getColumns().addAll(titreCol, auteurCol, presentationCol, parutionCol, colonneCol, rangeeCol, empruntCol,
+                resumeCol, lienCol, deleteCol);
     }
 
     public void ajouterLivre(Bibliotheque.Livre livre) {
