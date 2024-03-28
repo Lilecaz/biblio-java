@@ -9,6 +9,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Optional;
 
@@ -49,7 +50,7 @@ public class MainApp extends Application {
                 result.ifPresent(name -> {
                     try {
                         WordExporter.exportToWord(tableView.getItems(), name, primaryStage);
-                    } catch (UnsupportedEncodingException e) {
+                    } catch (IOException e) {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
