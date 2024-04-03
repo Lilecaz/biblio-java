@@ -11,7 +11,7 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.util.Optional;
 
-public class MainApp extends Application {
+public class MainWindow extends Application {
 
     private File currentFile;
 
