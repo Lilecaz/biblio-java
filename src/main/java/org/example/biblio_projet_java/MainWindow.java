@@ -9,6 +9,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import java.io.File;
+import java.io.IOException;
 import java.util.Optional;
 
 public class MainWindow extends Application {
@@ -46,7 +47,12 @@ public class MainWindow extends Application {
 
                 Optional<String> result = dialog.showAndWait();
                 result.ifPresent(name -> {
-                    WordExporter.exportToWord(tableView.getItems(), name, primaryStage);
+                    try {
+                        WordExporter.exportToWord(tableView.getItems(), name, primaryStage);
+                    } catch (IOException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
                 });
             } else {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -101,6 +107,7 @@ public class MainWindow extends Application {
         root.setTop(menuBar); // Placer le menuBar en haut
 
         HBox formulaireLivreBox = new HBox(formulaireLivre);
+        formulaireLivreBox.setPrefSize(300, 300);
         VBox tableViewBox = new VBox(tableView);
 
         root.setCenter(tableViewBox);
