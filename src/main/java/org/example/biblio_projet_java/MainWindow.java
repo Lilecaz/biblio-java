@@ -47,11 +47,15 @@ public class MainWindow extends Application {
 
                 Optional<String> result = dialog.showAndWait();
                 result.ifPresent(name -> {
-                    try {
-                        WordExporter.exportToWord(tableView.getItems(), name, primaryStage);
-                    } catch (IOException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
+                    WordExporter wordExporter = new WordExporter();
+                    wordExporter.export(tableView.getItems(), name, primaryStage);
+                    FileChooser fileChooser = new FileChooser();
+                    fileChooser.setTitle("Exporter le document Word");
+                    fileChooser.getExtensionFilters().addAll(
+                            new FileChooser.ExtensionFilter("Fichiers Word", "*.docx"));
+                    File selectedFile = fileChooser.showSaveDialog(primaryStage);
+                    if (selectedFile != null) {
+                        wordExporter.save(selectedFile);
                     }
                 });
             } else {

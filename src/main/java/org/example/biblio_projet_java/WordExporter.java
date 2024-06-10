@@ -8,6 +8,15 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.example.biblio_projet_java.Bibliotheque.Livre;
+import org.openxmlformats.schemas.officeDocument.x2006.sharedTypes.STOnOff1;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDecimalNumber;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTOnOff;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTP;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPPrGeneral;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSimpleField;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTString;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTStyle;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.STStyleType;
 
 import javafx.scene.control.Alert;
 import javafx.stage.FileChooser;
@@ -17,82 +26,191 @@ import org.apache.poi.wp.usermodel.HeaderFooterType;
 import org.apache.poi.xwpf.usermodel.*;
 
 public class WordExporter {
-    public static void exportToWord(List<Livre> livres, String titreDocument, Stage primaryStage)
-            throws IOException {
-        // Créer un document Word
-        try (XWPFDocument document = new XWPFDocument()) {
-            // Créer un en-tête avec le titre du document et la date d'exportation
-            XWPFHeader header = document.createHeader(HeaderFooterType.DEFAULT);
-            XWPFParagraph headerParagraph = header.createParagraph();
-            XWPFRun headerRun = headerParagraph.createRun();
-            headerRun.setText(titreDocument);
-            headerRun.addBreak();
-            headerRun.setText("Exporté le : " + LocalDate.now());
 
-            // Créer le sommaire avec des liens vers chaque livre
-            XWPFParagraph summaryParagraph = document.createParagraph();
-            XWPFRun summaryRun = summaryParagraph.createRun();
-            summaryRun.setText("Sommaire");
-            summaryRun.addBreak();
+    private XWPFDocument document;
 
-            for (Livre livre : livres) {
-                // Créer une ancre pour chaque titre de livre
-                String anchor = "titre_" + livre.getTitre().replace(" ", "_");
-                XWPFParagraph anchorParagraph = document.createParagraph();
-                anchorParagraph.setPageBreak(true);
-                anchorParagraph.createRun().setText(anchor);
-                anchorParagraph.setNumID(BigInteger.valueOf(1));
+    public WordExporter() {
+        this.document = new XWPFDocument();
+    }
 
-                // Ajouter le titre de livre au sommaire avec un lien hypertexte vers l'ancre
-                // correspondante
-                XWPFHyperlinkRun hyperlinkRun = summaryParagraph.createHyperlinkRun("#" + anchor);
-                hyperlinkRun.setText("Titre: " + livre.getTitre());
-                hyperlinkRun.addBreak();
+    public void export(List<Livre> livres, String titreDocument, Stage primaryStage) {
+        try {
+            // Ajouter la page de garde
+            addTitlePage(titreDocument);
 
-                // Ajouter les détails du livre à côté du titre
-                XWPFParagraph contentParagraph = document.createParagraph();
-                XWPFRun contentRun = contentParagraph.createRun();
-                contentRun.setText("Auteur: " + livre.getAuteur().getNom() + " " + livre.getAuteur().getPrenom());
-                contentRun.addBreak();
-                contentRun.setText("Parution: " + livre.getParution());
-                contentRun.addBreak();
-                contentRun.setText("Présentation: " + livre.getPresentation());
-                contentRun.addBreak();
-                contentRun.setText("Colonne: " + livre.getColonne());
-                contentRun.addBreak();
-                contentRun.setText("Rangée: " + livre.getRangee());
-                contentRun.addBreak();
-                contentRun.setText("Emprunt: " + (livre.isEmprunt() ? "Oui" : "Non"));
-                contentRun.addBreak();
-                contentRun.setText("Résumé: " + livre.getResume());
-                contentRun.addBreak();
-                contentRun.setText("Lien: " + livre.getLien());
-                contentRun.addBreak();
-            }
+            // Ajouter le sommaire
+            addTableOfContent();
 
-            // Exporter le document Word
+            // Ajouter les sections de livres
+            addBooksSection(livres, "Livres", false);
+            addBooksSection(livres, "Livres Empruntés", true);
+
+            // Choisir l'emplacement pour enregistrer le fichier
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Exporter le document Word");
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichier Word", "*.docx"));
             File file = fileChooser.showSaveDialog(primaryStage);
+
             if (file != null) {
-                try (FileOutputStream out = new FileOutputStream(file)) {
-                    document.write(out);
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("Exportation réussie");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Les données ont été exportées avec succès dans le document Word.");
-                    alert.showAndWait();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Erreur d'exportation");
-                    alert.setHeaderText(null);
-                    alert.setContentText(
-                            "Une erreur s'est produite lors de l'exportation des données dans le document Word.");
-                    alert.showAndWait();
-                }
+                save(file);
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Erreur d'exportation");
+            alert.setHeaderText(null);
+            alert.setContentText("Une erreur s'est produite lors de l'exportation des données dans le document Word.");
+            alert.showAndWait();
+        }
+    }
+
+    private void addTitlePage(String titreDocument) {
+        XWPFParagraph titlePageParagraph = document.createParagraph();
+        titlePageParagraph.setAlignment(ParagraphAlignment.CENTER);
+
+        XWPFRun titlePageRun = titlePageParagraph.createRun();
+        titlePageRun.setText(titreDocument);
+        titlePageRun.setBold(true);
+        titlePageRun.setFontSize(20);
+        titlePageRun.addBreak();
+        titlePageRun.addBreak();
+        titlePageRun.setText("Exporté le : " + LocalDate.now());
+        titlePageRun.addBreak();
+        titlePageRun.addBreak();
+        // titlePageRun.setText("Liste des livres dans la bibliothèque");
+
+        titlePageParagraph.setPageBreak(true); // Sauter à la page suivante
+    }
+
+    private void addTableOfContent() {
+        // Créer le sommaire
+        XWPFParagraph tocParagraph = document.createParagraph();
+        CTSimpleField toc = tocParagraph.getCTP().addNewFldSimple();
+        toc.setInstr("TOC \\o \"1-3\" \\h \\z \\u");
+        toc.setDirty(STOnOff1.ON);
+
+        // Ajouter un run au paragraphe pour le texte du sommaire
+        XWPFRun tocRun = tocParagraph.createRun();
+        tocRun.setText("Table des matières");
+        tocRun.setBold(true);
+
+        // Ajouter un saut de page après le sommaire
+        tocParagraph.setPageBreak(true);
+
+        // Ajouter les styles personnalisés
+        addCustomHeadingStyle(document, "heading 1", 1);
+        addCustomHeadingStyle(document, "heading 2", 2);
+    }
+
+    private void addBooksSection(List<Livre> livres, String sectionTitle, boolean isEmprunte) {
+        // Ajouter le titre de la section
+        XWPFParagraph sectionTitleParagraph = document.createParagraph();
+        sectionTitleParagraph.setStyle("heading 1");
+        XWPFRun sectionTitleRun = sectionTitleParagraph.createRun();
+        sectionTitleRun.setText(sectionTitle);
+        sectionTitleRun.setBold(true);
+
+        // Ajouter les sous-titres avec les liens cliquables
+        int count = 1;
+        for (Livre livre : livres) {
+            if (livre.isEmprunt() == isEmprunte) {
+                // Ajouter le lien dans le sommaire
+                XWPFParagraph summaryParagraph = document.createParagraph();
+                XWPFHyperlinkRun hyperlinkRun = summaryParagraph
+                        .createHyperlinkRun("#" + livre.getTitre().replace(" ", "_"));
+                hyperlinkRun.setText(count + ". " + livre.getTitre());
+                hyperlinkRun.setBold(true);
+                hyperlinkRun.addBreak();
+                count++;
+
+                // Ajouter les détails du livre sur une nouvelle page
+                document.createParagraph().setPageBreak(true);
+                addLivreDetails(document, livre);
+            }
+        }
+    }
+
+    private static void addCustomHeadingStyle(XWPFDocument document, String strStyleId, int headingLevel) {
+        CTStyle ctStyle = CTStyle.Factory.newInstance();
+        ctStyle.setStyleId(strStyleId);
+
+        CTString styleName = CTString.Factory.newInstance();
+        styleName.setVal(strStyleId);
+        ctStyle.setName(styleName);
+
+        CTDecimalNumber indentNumber = CTDecimalNumber.Factory.newInstance();
+        indentNumber.setVal(BigInteger.valueOf(headingLevel));
+
+        ctStyle.setUiPriority(indentNumber);
+
+        CTOnOff onoffnull = CTOnOff.Factory.newInstance();
+        ctStyle.setUnhideWhenUsed(onoffnull);
+
+        ctStyle.setQFormat(onoffnull);
+
+        CTPPrGeneral ppr = CTPPrGeneral.Factory.newInstance();
+        ppr.setOutlineLvl(indentNumber);
+        ctStyle.setPPr(ppr);
+
+        XWPFStyle style = new XWPFStyle(ctStyle);
+
+        XWPFStyles styles = document.createStyles();
+
+        style.setType(STStyleType.PARAGRAPH);
+        styles.addStyle(style);
+    }
+
+    private static void addLivreDetails(XWPFDocument document, Livre livre) {
+        // Ajouter une ancre pour le lien
+        XWPFParagraph anchorParagraph = document.createParagraph();
+        anchorParagraph.setStyle("heading 2");
+        anchorParagraph.setPageBreak(true);
+        XWPFRun anchorRun = anchorParagraph.createRun();
+        anchorRun.setText(livre.getTitre());
+        anchorParagraph.setNumID(BigInteger.valueOf(1));
+
+        // Titre du livre
+        XWPFParagraph titleParagraph = document.createParagraph();
+        titleParagraph.setStyle("heading 2");
+        XWPFRun titleRun = titleParagraph.createRun();
+        titleRun.setText("Titre: " + livre.getTitre());
+        titleRun.setBold(true);
+
+        // Détails du livre
+        XWPFParagraph contentParagraph = document.createParagraph();
+        XWPFRun contentRun = contentParagraph.createRun();
+        contentRun.setText("Auteur: " + livre.getAuteur().getNom() + " " + livre.getAuteur().getPrenom());
+        contentRun.addBreak();
+        contentRun.setText("Parution: " + livre.getParution());
+        contentRun.addBreak();
+        contentRun.setText("Présentation: " + livre.getPresentation());
+        contentRun.addBreak();
+        contentRun.setText("Colonne: " + livre.getColonne());
+        contentRun.addBreak();
+        contentRun.setText("Rangée: " + livre.getRangee());
+        contentRun.addBreak();
+        contentRun.setText("Emprunt: " + (livre.isEmprunt() ? "Oui" : "Non"));
+        contentRun.addBreak();
+        contentRun.setText("Résumé: " + livre.getResume());
+        contentRun.addBreak();
+        contentRun.setText("Lien: " + livre.getLien());
+        contentRun.addBreak();
+    }
+
+    public void save(File file) {
+        try (FileOutputStream out = new FileOutputStream(file)) {
+            document.write(out);
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Exportation réussie");
+            alert.setHeaderText(null);
+            alert.setContentText("Le document a été exporté avec succès.");
+            alert.showAndWait();
+        } catch (IOException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Erreur d'exportation");
+            alert.setHeaderText(null);
+            alert.setContentText("Une erreur s'est produite lors de l'exportation du document.");
+            alert.showAndWait();
         }
     }
 }
