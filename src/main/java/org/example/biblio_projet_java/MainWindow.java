@@ -10,16 +10,67 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Optional;
+import javafx.geometry.Insets;
+import javafx.scene.layout.GridPane;
+import javafx.util.Pair;
 
 public class MainWindow extends Application {
 
     private File currentFile;
+    private DatabaseManager database;
+    private LivreTableView tableView;
 
     @Override
-    public void start(Stage primaryStage) {
-        LivreTableView tableView = new LivreTableView();
+    public void start(Stage primaryStage) throws SQLException {
+        database = new DatabaseManager();
+
+        // Initial scene with buttons
+        VBox startBox = new VBox(10);
+        startBox.setPrefSize(300, 200);
+        startBox.setSpacing(10);
+
+        Button btnConnect = new Button("Se connecter");
+        Button btnSignUp = new Button("S'inscrire");
+        Button btnOpenFile = new Button("Ouvrir un fichier");
+
+        startBox.getChildren().addAll(btnConnect, btnSignUp, btnOpenFile);
+        Scene startScene = new Scene(startBox);
+
+        btnConnect.setOnAction(event -> {
+            showLoginDialog(primaryStage);
+            showMainWindow(primaryStage, null);
+        });
+
+        btnSignUp.setOnAction(event -> {
+            showSignUpDialog(primaryStage);
+            showMainWindow(primaryStage, null);
+        });
+
+        btnOpenFile.setOnAction(event -> {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Ouvrir un fichier XML");
+            fileChooser.getExtensionFilters().addAll(
+                    new FileChooser.ExtensionFilter("Fichiers XML", "*.xml"));
+            File selectedFile = fileChooser.showOpenDialog(primaryStage);
+            if (selectedFile != null) {
+                showMainWindow(primaryStage, selectedFile);
+            }
+        });
+
+        primaryStage.setTitle("Biblio - Choisissez une option");
+        primaryStage.setScene(startScene);
+        primaryStage.show();
+    }
+
+    private void showMainWindow(Stage primaryStage, File fileToLoad) {
+        tableView = new LivreTableView();
         FormulaireLivre formulaireLivre = new FormulaireLivre(tableView);
+
+        if (fileToLoad != null) {
+            currentFile = XMLFileManager.chargerFichierXML(fileToLoad, tableView);
+        }
 
         MenuItem menuItem1 = new MenuItem("Ouvrir");
         menuItem1.setOnAction(event -> {
@@ -50,7 +101,6 @@ public class MainWindow extends Application {
                     try {
                         WordExporter.exportToWord(tableView.getItems(), name, primaryStage);
                     } catch (IOException e) {
-                        // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
                 });
@@ -61,7 +111,6 @@ public class MainWindow extends Application {
                 alert.setContentText("Aucun livre à exporter.");
                 alert.showAndWait();
             }
-
         });
 
         MenuItem menuItem3 = new MenuItem("Sauvegarder");
@@ -119,6 +168,129 @@ public class MainWindow extends Application {
         primaryStage.setTitle("Biblio");
         primaryStage.setScene(scene);
         primaryStage.show();
+    }
+
+    public void showLoginDialog(Stage primaryStage) {
+        Dialog<Pair<String, String>> dialog = new Dialog<>();
+        dialog.setTitle("Se connecter");
+
+        ButtonType loginButtonType = new ButtonType("Login", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(loginButtonType, ButtonType.CANCEL);
+
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20, 150, 10, 10));
+
+        TextField username = new TextField();
+        username.setPromptText("Username");
+        PasswordField password = new PasswordField();
+        password.setPromptText("Password");
+
+        grid.add(new Label("Username:"), 0, 0);
+        grid.add(username, 1, 0);
+        grid.add(new Label("Password:"), 0, 1);
+        grid.add(password, 1, 1);
+
+        dialog.getDialogPane().setContent(grid);
+
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == loginButtonType) {
+                return new Pair<>(username.getText(), password.getText());
+            }
+            return null;
+        });
+
+        Optional<Pair<String, String>> result = dialog.showAndWait();
+
+        if (!result.isPresent()) {
+            // User closed the dialog or clicked Cancel, exit the application
+            System.exit(0);
+            return;
+        }
+
+        result.ifPresent(credentials -> {
+            String usernameText = credentials.getKey();
+            String passwordText = credentials.getValue();
+            try {
+                if (database.loginUser(usernameText, passwordText)) {
+                    showAlert(Alert.AlertType.INFORMATION, "Connexion réussie", "Vous êtes maintenant connecté.");
+                    // Load main window or proceed to next step
+                } else {
+                    showAlert(Alert.AlertType.ERROR, "Échec de la connexion", "Username ou mot de passe incorrect.");
+                    System.exit(0);
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                showAlert(Alert.AlertType.ERROR, "Erreur de connexion", "Une erreur s'est produite lors de la connexion.");
+                System.exit(0);
+            }
+        });
+    }
+
+    public void showSignUpDialog(Stage primaryStage) {
+        Dialog<Pair<String, String>> dialog = new Dialog<>();
+        dialog.setTitle("S'inscrire");
+
+        ButtonType signUpButtonType = new ButtonType("Sign Up", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(signUpButtonType, ButtonType.CANCEL);
+
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20, 150, 10, 10));
+
+        TextField username = new TextField();
+        username.setPromptText("Username");
+        PasswordField password = new PasswordField();
+        password.setPromptText("Mot de passe");
+
+        grid.add(new Label("Username:"), 0, 0);
+        grid.add(username, 1, 0);
+        grid.add(new Label("Mot de passe:"), 0, 1);
+        grid.add(password, 1, 1);
+
+        dialog.getDialogPane().setContent(grid);
+
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == signUpButtonType) {
+                return new Pair<>(username.getText(), password.getText());
+            }
+            return null;
+        });
+
+        Optional<Pair<String, String>> result = dialog.showAndWait();
+
+        if (!result.isPresent()) {
+            // User closed the dialog or clicked Cancel, exit the application
+            System.exit(0);
+            return;
+        }
+
+        result.ifPresent(credentials -> {
+            String emailText = credentials.getKey();
+            String passwordText = credentials.getValue();
+            try {
+                if (database.registerUser(emailText, passwordText)) {
+                    showAlert(Alert.AlertType.INFORMATION, "Inscription réussie", "Vous êtes maintenant inscrit.");
+                } else {
+                    showAlert(Alert.AlertType.ERROR, "Échec de l'inscription", "L'inscription a échoué.");
+                    System.exit(0);
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                showAlert(Alert.AlertType.ERROR, "Erreur d'inscription", "Une erreur s'est produite lors de l'inscription.");
+                System.exit(0);
+            }
+        });
+    }
+
+    private void showAlert(Alert.AlertType alertType, String title, String message) {
+        Alert alert = new Alert(alertType);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
     public static void main(String[] args) {
