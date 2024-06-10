@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Main",
+            "request": "launch",
+            "mainClass": "org.example.biblio_projet_java.Main",
+            "projectName": "biblio_projet_java"
+        },
+        {
+            "type": "java",
             "name": "NewMain",
             "request": "launch",
             "mainClass": "org.example.biblio_projet_java.NewMain",
