@@ -227,7 +227,8 @@ public class MainWindow extends Application {
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
-                showAlert(Alert.AlertType.ERROR, "Erreur de connexion", "Une erreur s'est produite lors de la connexion.");
+                showAlert(Alert.AlertType.ERROR, "Erreur de connexion",
+                        "Une erreur s'est produite lors de la connexion.");
                 System.exit(0);
             }
         });
@@ -284,7 +285,8 @@ public class MainWindow extends Application {
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
-                showAlert(Alert.AlertType.ERROR, "Erreur d'inscription", "Une erreur s'est produite lors de l'inscription.");
+                showAlert(Alert.AlertType.ERROR, "Erreur d'inscription",
+                        "Une erreur s'est produite lors de l'inscription.");
                 System.exit(0);
             }
         });

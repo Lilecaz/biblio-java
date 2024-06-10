@@ -11,7 +11,6 @@ import org.example.biblio_projet_java.Bibliotheque.Livre;
 import org.openxmlformats.schemas.officeDocument.x2006.sharedTypes.STOnOff1;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDecimalNumber;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTOnOff;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTP;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPPrGeneral;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSimpleField;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTString;
@@ -22,7 +21,6 @@ import javafx.scene.control.Alert;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-import org.apache.poi.wp.usermodel.HeaderFooterType;
 import org.apache.poi.xwpf.usermodel.*;
 
 public class WordExporter {
@@ -41,9 +39,8 @@ public class WordExporter {
             // Ajouter le sommaire
             addTableOfContent();
 
-            // Ajouter les sections de livres
-            addBooksSection(livres, "Livres", false);
-            addBooksSection(livres, "Livres Empruntés", true);
+            // Ajouter les livres
+            addLivres(livres);
 
             // Choisir l'emplacement pour enregistrer le fichier
             FileChooser fileChooser = new FileChooser();
@@ -77,7 +74,7 @@ public class WordExporter {
         titlePageRun.setText("Exporté le : " + LocalDate.now());
         titlePageRun.addBreak();
         titlePageRun.addBreak();
-        // titlePageRun.setText("Liste des livres dans la bibliothèque");
+        titlePageRun.setText("Liste des livres dans la bibliothèque");
 
         titlePageParagraph.setPageBreak(true); // Sauter à la page suivante
     }
@@ -102,31 +99,14 @@ public class WordExporter {
         addCustomHeadingStyle(document, "heading 2", 2);
     }
 
-    private void addBooksSection(List<Livre> livres, String sectionTitle, boolean isEmprunte) {
-        // Ajouter le titre de la section
-        XWPFParagraph sectionTitleParagraph = document.createParagraph();
-        sectionTitleParagraph.setStyle("heading 1");
-        XWPFRun sectionTitleRun = sectionTitleParagraph.createRun();
-        sectionTitleRun.setText(sectionTitle);
-        sectionTitleRun.setBold(true);
-
-        // Ajouter les sous-titres avec les liens cliquables
-        int count = 1;
+    private void addLivres(List<Livre> livres) {
         for (Livre livre : livres) {
-            if (livre.isEmprunt() == isEmprunte) {
-                // Ajouter le lien dans le sommaire
-                XWPFParagraph summaryParagraph = document.createParagraph();
-                XWPFHyperlinkRun hyperlinkRun = summaryParagraph
-                        .createHyperlinkRun("#" + livre.getTitre().replace(" ", "_"));
-                hyperlinkRun.setText(count + ". " + livre.getTitre());
-                hyperlinkRun.setBold(true);
-                hyperlinkRun.addBreak();
-                count++;
+            // Ajouter les détails du livre avec les styles personnalisés
+            addLivreDetails(document, livre);
 
-                // Ajouter les détails du livre sur une nouvelle page
-                document.createParagraph().setPageBreak(true);
-                addLivreDetails(document, livre);
-            }
+            // Ajouter un saut de page après chaque livre
+            XWPFParagraph pageBreakParagraph = document.createParagraph();
+            pageBreakParagraph.setPageBreak(true);
         }
     }
 
@@ -161,23 +141,16 @@ public class WordExporter {
     }
 
     private static void addLivreDetails(XWPFDocument document, Livre livre) {
-        // Ajouter une ancre pour le lien
-        XWPFParagraph anchorParagraph = document.createParagraph();
-        anchorParagraph.setStyle("heading 2");
-        anchorParagraph.setPageBreak(true);
-        XWPFRun anchorRun = anchorParagraph.createRun();
-        anchorRun.setText(livre.getTitre());
-        anchorParagraph.setNumID(BigInteger.valueOf(1));
-
         // Titre du livre
         XWPFParagraph titleParagraph = document.createParagraph();
-        titleParagraph.setStyle("heading 2");
+        titleParagraph.setStyle("heading 1");
         XWPFRun titleRun = titleParagraph.createRun();
         titleRun.setText("Titre: " + livre.getTitre());
         titleRun.setBold(true);
 
         // Détails du livre
         XWPFParagraph contentParagraph = document.createParagraph();
+        contentParagraph.setStyle("heading 2");
         XWPFRun contentRun = contentParagraph.createRun();
         contentRun.setText("Auteur: " + livre.getAuteur().getNom() + " " + livre.getAuteur().getPrenom());
         contentRun.addBreak();
