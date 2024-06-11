@@ -6,36 +6,9 @@
     "configurations": [
         {
             "type": "java",
-            "name": "MainWindow",
-            "request": "launch",
-            "mainClass": "org.example.biblio_projet_java.MainWindow",
-            "projectName": "biblio_projet_java"
-        },
-        {
-            "type": "java",
             "name": "Main",
             "request": "launch",
             "mainClass": "org.example.biblio_projet_java.Main",
-            "projectName": "biblio_projet_java"
-        },
-        {
-            "type": "java",
-            "name": "NewMain",
-            "request": "launch",
-            "mainClass": "org.example.biblio_projet_java.NewMain",
-            "projectName": "biblio_projet_java"
-        },
-        {
-            "type": "java",
-            "name": "Current File",
-            "request": "launch",
-            "mainClass": "${file}"
-        },
-        {
-            "type": "java",
-            "name": "MainApp",
-            "request": "launch",
-            "mainClass": "org.example.biblio_projet_java.MainApp",
             "projectName": "biblio_projet_java"
         }
     ]
