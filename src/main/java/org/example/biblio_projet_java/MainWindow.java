@@ -287,7 +287,7 @@ public class MainWindow extends Application {
             String usernameText = credentials.getKey();
             String passwordText = credentials.getValue();
             try {
-                if (database.registerUser(usernameText, passwordText)) {
+                if (databaseManager.registerUser(usernameText, passwordText)) {
                     showAlert(Alert.AlertType.INFORMATION, "Inscription réussie", "Vous êtes maintenant inscrit.");
                 } else {
                     showAlert(Alert.AlertType.ERROR, "Échec de l'inscription", "L'inscription a échoué.");
