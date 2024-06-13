@@ -19,13 +19,14 @@ import javafx.util.Pair;
 public class MainWindow extends Application {
 
     private File currentFile;
-    private DatabaseManager database;
+    private DatabaseManager databaseManager;
     private LivreTableView tableView;
+    private String username;
 
     @Override
     public void start(Stage primaryStage) throws SQLException {
-        database = new DatabaseManager();
-
+        databaseManager = new DatabaseManager();
+        username = databaseManager.getUsername();
         // Initial scene with buttons
         VBox startBox = new VBox(10);
         startBox.setPrefSize(300, 200);
@@ -165,7 +166,15 @@ public class MainWindow extends Application {
         VBox tableViewBox = new VBox(tableView);
 
         root.setCenter(tableViewBox);
-        root.setRight(formulaireLivreBox); // Placer le formulaire à droite
+        System.out.println(databaseManager.getUserType());
+        System.out.println(databaseManager.getUsername());
+        System.out.println(databaseManager.getUserType().equals("admin"));
+
+        if (databaseManager.getUserType().equals("admin")) {
+            root.setRight(formulaireLivreBox); // Placer le formulaire à droite
+        } else {
+            root.setRight(null);
+        }
 
         Scene scene = new Scene(root, 800, 600);
         scene.getStylesheets().add(getClass().getResource("/styles.css").toExternalForm());
@@ -218,8 +227,9 @@ public class MainWindow extends Application {
             String usernameText = credentials.getKey();
             String passwordText = credentials.getValue();
             try {
-                if (database.loginUser(usernameText, passwordText)) {
+                if (databaseManager.loginUser(usernameText, passwordText)) {
                     showAlert(Alert.AlertType.INFORMATION, "Connexion réussie", "Vous êtes maintenant connecté.");
+                    databaseManager.setUserLoggedIn(true);
                     // Load main window or proceed to next step
                 } else {
                     showAlert(Alert.AlertType.ERROR, "Échec de la connexion", "Username ou mot de passe incorrect.");
@@ -277,7 +287,7 @@ public class MainWindow extends Application {
             String emailText = credentials.getKey();
             String passwordText = credentials.getValue();
             try {
-                if (database.registerUser(emailText, passwordText)) {
+                if (databaseManager.registerUser(emailText, passwordText)) {
                     showAlert(Alert.AlertType.INFORMATION, "Inscription réussie", "Vous êtes maintenant inscrit.");
                 } else {
                     showAlert(Alert.AlertType.ERROR, "Échec de l'inscription", "L'inscription a échoué.");

@@ -16,6 +16,9 @@ public class DatabaseManager {
     private static final String USER = "celil";
     private static final String PASSWORD = "biblioesieeit";
     private Connection connection;
+    private String usertype;
+    private String username;
+    private boolean isUserLoggedIn = false;
 
     public DatabaseManager() throws SQLException {
         connect();
@@ -42,7 +45,8 @@ public class DatabaseManager {
             StringBuilder hexString = new StringBuilder();
             for (byte b : hash) {
                 String hex = Integer.toHexString(0xff & b);
-                if (hex.length() == 1) hexString.append('0');
+                if (hex.length() == 1)
+                    hexString.append('0');
                 hexString.append(hex);
             }
             return hexString.toString();
@@ -69,9 +73,18 @@ public class DatabaseManager {
             stmt.setString(1, username);
             stmt.setString(2, hashedPassword);
             try (ResultSet rs = stmt.executeQuery()) {
+                System.out.println("User type: " + getUserType(username));
+                setUsername(username);
+                setUserType(getUserType(username));
+                setUserLoggedIn(true);
                 return rs.next();
             }
         }
+    }
+
+    public void logout() {
+        setUsername(null);
+        setUserType(null);
     }
 
     public String getUserType(String username) throws SQLException {
@@ -87,4 +100,29 @@ public class DatabaseManager {
             }
         }
     }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setUserType(String usertype) {
+        this.usertype = usertype;
+    }
+
+    public String getUserType() {
+        return usertype;
+    }
+
+    public boolean isUserLoggedIn() {
+        return isUserLoggedIn;
+    }
+
+    public void setUserLoggedIn(boolean userLoggedIn) {
+        isUserLoggedIn = userLoggedIn;
+    }
+
 }
