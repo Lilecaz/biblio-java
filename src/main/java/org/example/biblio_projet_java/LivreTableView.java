@@ -1,5 +1,9 @@
 package org.example.biblio_projet_java;
 
+import java.util.List;
+
+import org.example.biblio_projet_java.Bibliotheque.Livre;
+
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.Node;
@@ -123,8 +127,8 @@ public class LivreTableView extends TableView<Bibliotheque.Livre> {
                 resumeCol, lienCol, deleteCol);
     }
 
-    public void ajouterLivre(Bibliotheque.Livre livre) {
-        getItems().add(livre);
+    public void ajouterLivre(Livre nouveauLivre) {
+        getItems().add(nouveauLivre);
     }
 
     public void supprimerLivre(Bibliotheque.Livre livre) {
@@ -146,5 +150,6 @@ public class LivreTableView extends TableView<Bibliotheque.Livre> {
     public Bibliotheque.Livre getLivreSelectionne() {
         return getSelectionModel().getSelectedItem();
     }
+    
 
 }

@@ -67,7 +67,7 @@ public class MainWindow extends Application {
 
     private void showMainWindow(Stage primaryStage, File fileToLoad) {
         tableView = new LivreTableView();
-        FormulaireLivre formulaireLivre = new FormulaireLivre(tableView);
+        FormulaireLivre formulaireLivre = new FormulaireLivre(tableView, databaseManager);
 
         if (fileToLoad != null) {
             currentFile = XMLFileManager.chargerFichierXML(fileToLoad, tableView);

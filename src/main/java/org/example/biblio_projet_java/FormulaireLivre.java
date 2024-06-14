@@ -5,7 +5,10 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+
+import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.List;
 
 import org.example.biblio_projet_java.Bibliotheque.Livre;
 
@@ -24,7 +27,10 @@ public class FormulaireLivre extends VBox {
 
     private ImageView previewImageView;
 
-    public FormulaireLivre(LivreTableView tableView) {
+    private DatabaseManager dbManager;
+
+    public FormulaireLivre(LivreTableView tableView, DatabaseManager dbManager) {
+        this.dbManager = dbManager;
 
         previewImageView = new ImageView();
         previewImageView.setFitWidth(200); // Ajustez la largeur de l'aperçu selon vos besoins
@@ -105,9 +111,18 @@ public class FormulaireLivre extends VBox {
                 nouveauLivre.setResume(resumeArea.getText());
                 nouveauLivre.setLien(lienField.getText());
 
-                tableView.ajouterLivre(nouveauLivre);
+                try {
+                    if (dbManager.ajouterLivre(nouveauLivre)) {
+                        tableView.ajouterLivre(nouveauLivre);
 
-                clearFields();
+                        clearFields();
+                    } else {
+                        showAlert("Erreur lors de l'ajout du livre à la base de données.");
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    showAlert("Erreur lors de l'ajout du livre à la base de données : " + e.getMessage());
+                }
             }
         });
 
@@ -128,10 +143,11 @@ public class FormulaireLivre extends VBox {
         gridPane.addRow(10, previewImageView);
 
         this.getChildren().add(gridPane);
+        chargerLivresDansTableView(tableView);
 
         this.getStyleClass().add("formulaire");
     }
-
+   
     private boolean validateFields() {
         if (titreField.getText().isEmpty() || auteurField.getText().isEmpty() ||
                 presentationField.getText().isEmpty() || parutionField.getText().isEmpty() ||
@@ -192,5 +208,14 @@ public class FormulaireLivre extends VBox {
             }
         }
         return false;
+    }
+    public void chargerLivresDansTableView(LivreTableView tableView) {
+        try {
+            List<Livre> livres = dbManager.getLivres();
+            tableView.getItems().addAll(livres);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showAlert("Erreur lors du chargement des livres depuis la base de données : " + e.getMessage());
+        }
     }
 }
