@@ -21,12 +21,11 @@ public class MainWindow extends Application {
     private File currentFile;
     private DatabaseManager databaseManager;
     private LivreTableView tableView;
-    private String username;
 
     @Override
     public void start(Stage primaryStage) throws SQLException {
         databaseManager = new DatabaseManager();
-        username = databaseManager.getUsername();
+        databaseManager.getUsername();
         // Initial scene with buttons
         VBox startBox = new VBox(10);
         startBox.setPrefSize(300, 200);
@@ -143,6 +142,13 @@ public class MainWindow extends Application {
             }
         });
 
+        MenuItem decoMenuItem = new MenuItem("Se déconnecter");
+        decoMenuItem.setOnAction(event -> {
+            // show the start scene
+            primaryStage.setScene(new Scene(new VBox(10)));
+            databaseManager.setUserLoggedIn(false);
+        });
+
         MenuItem menuItem5 = new MenuItem("Infos");
 
         Menu menu = new Menu("Fichier");
@@ -154,8 +160,11 @@ public class MainWindow extends Application {
         Menu menu3 = new Menu("About");
         menu3.getItems().addAll(menuItem5);
 
+        Menu menuUser = new Menu("Utilisateur");
+        menuUser.getItems().addAll(decoMenuItem);
+
         MenuBar menuBar = new MenuBar();
-        menuBar.getMenus().addAll(menu, menu2, menu3);
+        menuBar.getMenus().addAll(menu, menu2, menu3, menuUser);
 
         BorderPane root = new BorderPane(); // Utiliser un BorderPane comme conteneur principal
 
