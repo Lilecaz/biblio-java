@@ -24,3 +24,5 @@ jobs:
         run: mvn test
       - name: Generate Javadoc
         run: mvn javadoc:javadoc
+      - name: Analyze with SonarCloud
+        run: mvn -B verify sonar:sonar -Dsonar.projectKey=Lilecaz_biblio-java -Dsonar.organization=Lilecaz -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }}
