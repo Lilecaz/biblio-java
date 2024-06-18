@@ -14,7 +14,7 @@ public class DatabaseManagerTest {
 
     private DatabaseManager dbManager;
 
-    @BeforeAll
+    @BeforeEach
     public void setup() throws SQLException {
         try {
             dbManager = new DatabaseManager();
