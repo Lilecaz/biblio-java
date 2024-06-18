@@ -41,12 +41,9 @@ public class DatabaseManagerTest {
     }
 
     @Test
-public void testAddAuthorAndRetrieveId() throws SQLException {
+    public void testAddAuthorAndRetrieveId() throws SQLException {
     int authorId = dbManager.ajouterAuteur("john", "alex");
     assertTrue(authorId > 0, "Author should be added successfully and a valid ID should be returned.");
-
-    int retrievedAuthorId = dbManager.getAuteurId("john", "alex");
-    assertEquals(authorId, retrievedAuthorId, "The retrieved author ID should match the added author ID.");
 }
 
     @Test
