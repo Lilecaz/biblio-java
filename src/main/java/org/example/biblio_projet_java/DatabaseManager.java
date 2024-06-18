@@ -29,8 +29,13 @@ public class DatabaseManager {
 
     private void connect() throws SQLException {
         if (connection == null || connection.isClosed()) {
-            connection = DriverManager.getConnection(URL, USER, PASSWORD);
-            System.out.println("Connected to " + URL);
+            try {
+                connection = DriverManager.getConnection(URL, USER, PASSWORD);
+                System.out.println("Connected to " + URL);
+
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
         }
     }
 

@@ -14,7 +14,7 @@ public class DatabaseManagerTest {
 
     private DatabaseManager dbManager;
 
-    @BeforeEach
+    @BeforeAll
     public void setup() throws SQLException {
         dbManager = new DatabaseManager();
     }
@@ -28,7 +28,8 @@ public class DatabaseManagerTest {
 
     @Test
     public void testRegisterUser() throws SQLException {
-        boolean isRegistered = this.dbManager.registerUser("testUser", "testPassword");
+        System.out.println(dbManager);
+        boolean isRegistered = dbManager.registerUser("testUser", "testPassword");
         assertTrue(isRegistered, "User should be registered successfully.");
     }
 
