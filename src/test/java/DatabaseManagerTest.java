@@ -16,7 +16,7 @@ public class DatabaseManagerTest {
 
     // @BeforeAll
     // public void setup() throws SQLException {
-    //     dbManager = new DatabaseManager();
+    // dbManager = new DatabaseManager();
     // }
 
     @AfterAll
@@ -29,26 +29,30 @@ public class DatabaseManagerTest {
     @Test
     public void testRegisterUser() throws SQLException {
         dbManager = new DatabaseManager();
-        System.out.println(dbManager);
         boolean isRegistered = dbManager.registerUser("testUser", "testPassword");
         assertTrue(isRegistered, "User should be registered successfully.");
     }
 
     @Test
     public void testLoginUser() throws SQLException {
-        boolean isLoggedIn = this.dbManager.loginUser("test1", "test");
+        dbManager = new DatabaseManager();
+        boolean isLoggedIn = dbManager.loginUser("test1", "test");
         assertTrue(isLoggedIn, "User should be able to log in successfully.");
         dbManager.logout();
     }
 
     @Test
     public void testAddAuthorAndRetrieveId() throws SQLException {
-        int authorId = this.dbManager.ajouterAuteur("john", "alex");
+        dbManager = new DatabaseManager();
+
+        int authorId = dbManager.ajouterAuteur("john", "alex");
         assertTrue(authorId > 0, "Author should be added successfully and a valid ID should be returned.");
     }
 
     @Test
     public void testAddAndRetrieveBook() throws SQLException {
+        dbManager = new DatabaseManager();
+
         Auteur auteur = new Auteur();
         auteur.setNom("TestNom");
         auteur.setPrenom("TestPrenom");
@@ -64,7 +68,7 @@ public class DatabaseManagerTest {
         livre.setResume("TestResume");
         livre.setLien("TestLien");
 
-        boolean isLivreAdded = this.dbManager.ajouterLivre(livre);
+        boolean isLivreAdded = dbManager.ajouterLivre(livre);
         assertTrue(isLivreAdded, "Book should be added successfully.");
 
         List<Livre> livres = dbManager.getLivres();
