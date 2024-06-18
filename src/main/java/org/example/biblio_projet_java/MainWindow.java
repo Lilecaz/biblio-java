@@ -9,6 +9,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Optional;
 import javafx.geometry.Insets;
@@ -227,7 +228,7 @@ public class MainWindow extends Application {
 
         if (!result.isPresent()) {
             // User closed the dialog or clicked Cancel, exit the application
-            System.exit(0);
+            dialog.close();
             return;
         }
 
@@ -241,13 +242,13 @@ public class MainWindow extends Application {
                     // Load main window or proceed to next step
                 } else {
                     showAlert(Alert.AlertType.ERROR, "Échec de la connexion", "Username ou mot de passe incorrect.");
-                    System.exit(0);
+                    dialog.close();
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
                 showAlert(Alert.AlertType.ERROR, "Erreur de connexion",
                         "Une erreur s'est produite lors de la connexion.");
-                System.exit(0);
+                dialog.close();
             }
         });
     }
@@ -287,7 +288,7 @@ public class MainWindow extends Application {
 
         if (!result.isPresent()) {
             // User closed the dialog or clicked Cancel, exit the application
-            System.exit(0);
+            dialog.close();
             return;
         }
 
@@ -299,13 +300,13 @@ public class MainWindow extends Application {
                     showAlert(Alert.AlertType.INFORMATION, "Inscription réussie", "Vous êtes maintenant inscrit.");
                 } else {
                     showAlert(Alert.AlertType.ERROR, "Échec de l'inscription", "L'inscription a échoué.");
-                    System.exit(0);
+                    dialog.close();
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
                 showAlert(Alert.AlertType.ERROR, "Erreur d'inscription",
                         "Une erreur s'est produite lors de l'inscription.");
-                System.exit(0);
+                dialog.close();
             }
         });
     }
