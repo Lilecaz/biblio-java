@@ -1,9 +1,9 @@
-
 import org.example.biblio_projet_java.DatabaseManager;
 import org.example.biblio_projet_java.Bibliotheque.Livre;
 import org.example.biblio_projet_java.Bibliotheque.Livre.Auteur;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.Test;
+
 import java.sql.SQLException;
 import java.util.List;
 
@@ -21,7 +21,6 @@ public class DatabaseManagerTest {
         } catch (SQLException e) {
             // Handle or log the exception appropriately
             e.printStackTrace();
-
             throw e; // Ensure the exception propagates up to fail the test setup
         }
     }
@@ -41,7 +40,7 @@ public class DatabaseManagerTest {
 
     @Test
     public void testLoginUser() throws SQLException {
-        boolean isLoggedIn = dbManager.loginUser("test1 ", "test");
+        boolean isLoggedIn = dbManager.loginUser("test1", "test");
         assertTrue(isLoggedIn, "User should be able to log in successfully.");
         dbManager.logout();
     }
