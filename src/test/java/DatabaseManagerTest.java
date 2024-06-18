@@ -17,6 +17,7 @@ public class DatabaseManagerTest {
     @BeforeAll
     public void setup() throws SQLException {
         dbManager = new DatabaseManager();
+        System.out.println(dbManager);
     }
 
     @AfterAll
