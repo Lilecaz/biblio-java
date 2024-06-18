@@ -34,7 +34,7 @@ public class DatabaseManagerTest {
 
     @Test
     public void testRegisterUser() throws SQLException {
-        boolean isRegistered = dbManager.registerUser("testUser", "testPassword");
+        boolean isRegistered = this.dbManager.registerUser("testUser", "testPassword");
         assertTrue(isRegistered, "User should be registered successfully.");
     }
 
