@@ -175,10 +175,6 @@ public class MainWindow extends Application {
         VBox tableViewBox = new VBox(tableView);
 
         root.setCenter(tableViewBox);
-        System.out.println(databaseManager.getUserType());
-        System.out.println(databaseManager.getUsername());
-        System.out.println(databaseManager.getUserType().equals("admin"));
-
         if (databaseManager.getUserType().equals("admin")) {
             root.setRight(formulaireLivreBox); // Placer le formulaire à droite
         } else {

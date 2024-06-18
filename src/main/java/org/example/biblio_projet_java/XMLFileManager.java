@@ -44,10 +44,6 @@ public class XMLFileManager {
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
             Bibliotheque bibliotheque = new Bibliotheque();
-            System.out.println("livres: " + livres.size());
-            for (Livre livre : livres) {
-                System.out.println("livre: " + livre.isEmprunt());
-            }
             bibliotheque.getLivre().addAll(livres);
 
             if (file.exists()) {
