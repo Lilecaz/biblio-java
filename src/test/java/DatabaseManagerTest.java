@@ -40,14 +40,14 @@ public class DatabaseManagerTest {
 
     @Test
     public void testLoginUser() throws SQLException {
-        boolean isLoggedIn = dbManager.loginUser("test1", "test");
+        boolean isLoggedIn = this.dbManager.loginUser("test1", "test");
         assertTrue(isLoggedIn, "User should be able to log in successfully.");
         dbManager.logout();
     }
 
     @Test
     public void testAddAuthorAndRetrieveId() throws SQLException {
-        int authorId = dbManager.ajouterAuteur("john", "alex");
+        int authorId = this.dbManager.ajouterAuteur("john", "alex");
         assertTrue(authorId > 0, "Author should be added successfully and a valid ID should be returned.");
     }
 
@@ -68,7 +68,7 @@ public class DatabaseManagerTest {
         livre.setResume("TestResume");
         livre.setLien("TestLien");
 
-        boolean isLivreAdded = dbManager.ajouterLivre(livre);
+        boolean isLivreAdded = this.dbManager.ajouterLivre(livre);
         assertTrue(isLivreAdded, "Book should be added successfully.");
 
         List<Livre> livres = dbManager.getLivres();
