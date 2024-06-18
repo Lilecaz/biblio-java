@@ -17,8 +17,17 @@ public class DatabaseManagerTest {
 
     @BeforeAll
     public void setup() throws SQLException {
-        dbManager = new DatabaseManager();
+
+        try {
+        
+            dbManager = new DatabaseManager();
+        } catch (SQLException e) {
+        // Handle or log the exception appropriately
+            e.printStackTrace();
+        
+            throw e; // Ensure the exception propagates up to fail the test setup
     }
+}
 
     @AfterAll
     public void tearDown() throws SQLException {
