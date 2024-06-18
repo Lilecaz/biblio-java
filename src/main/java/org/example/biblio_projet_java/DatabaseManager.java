@@ -9,7 +9,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.example.biblio_projet_java.Bibliotheque.Livre;
@@ -104,6 +103,7 @@ public class DatabaseManager {
             }
         }
     }
+
     public int getAuteurId(String nom, String prenom) throws SQLException {
         String query = "SELECT id FROM auteurs WHERE nom = ? AND prenom = ?";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
@@ -138,7 +138,7 @@ public class DatabaseManager {
         String nom = livre.getAuteur().getNom();
         String prenom = livre.getAuteur().getPrenom();
         int auteurId = getAuteurId(nom, prenom);
-        
+
         // Si l'auteur n'existe pas, ajoutez-le
         if (auteurId == -1) {
             auteurId = ajouterAuteur(nom, prenom);
@@ -162,13 +162,15 @@ public class DatabaseManager {
             return rowsAffected > 0;
         }
     }
+
     public List<Livre> getLivres() throws SQLException {
         List<Livre> livres = new ArrayList<>();
-        String query = "SELECT l.titre, l.presentation, l.parution, l.colonne, l.rangee, l.emprunt, l.resume, l.lien, a.nom, a.prenom " +
-                       "FROM livres l JOIN auteurs a ON l.auteur_id = a.id";
+        String query = "SELECT l.titre, l.presentation, l.parution, l.colonne, l.rangee, l.emprunt, l.resume, l.lien, a.nom, a.prenom "
+                +
+                "FROM livres l JOIN auteurs a ON l.auteur_id = a.id";
 
         try (PreparedStatement stmt = connection.prepareStatement(query);
-             ResultSet rs = stmt.executeQuery()) {
+                ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
                 Livre livre = new Livre();
@@ -216,7 +218,5 @@ public class DatabaseManager {
     public void setUserLoggedIn(boolean userLoggedIn) {
         isUserLoggedIn = userLoggedIn;
     }
-    
 
 }
-

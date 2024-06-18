@@ -1,7 +1,5 @@
 package org.example.biblio_projet_java;
 
-import java.util.List;
-
 import org.example.biblio_projet_java.Bibliotheque.Livre;
 
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -11,7 +9,6 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.util.Callback;
-import javafx.util.converter.BooleanStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 import javafx.util.converter.ShortStringConverter;
 
@@ -150,6 +147,5 @@ public class LivreTableView extends TableView<Bibliotheque.Livre> {
     public Bibliotheque.Livre getLivreSelectionne() {
         return getSelectionModel().getSelectedItem();
     }
-    
 
 }
