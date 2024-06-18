@@ -14,11 +14,10 @@ public class DatabaseManagerTest {
 
     private DatabaseManager dbManager;
 
-    @BeforeAll
-    public void setup() throws SQLException {
-        dbManager = new DatabaseManager();
-        System.out.println(dbManager);
-    }
+    // @BeforeAll
+    // public void setup() throws SQLException {
+    //     dbManager = new DatabaseManager();
+    // }
 
     @AfterAll
     public void tearDown() throws SQLException {
@@ -29,6 +28,7 @@ public class DatabaseManagerTest {
 
     @Test
     public void testRegisterUser() throws SQLException {
+        dbManager = new DatabaseManager();
         System.out.println(dbManager);
         boolean isRegistered = dbManager.registerUser("testUser", "testPassword");
         assertTrue(isRegistered, "User should be registered successfully.");
