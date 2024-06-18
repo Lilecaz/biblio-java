@@ -1,5 +1,4 @@
 
-
 import org.example.biblio_projet_java.DatabaseManager;
 import org.example.biblio_projet_java.Bibliotheque.Livre;
 import org.example.biblio_projet_java.Bibliotheque.Livre.Auteur;
@@ -17,17 +16,15 @@ public class DatabaseManagerTest {
 
     @BeforeAll
     public void setup() throws SQLException {
-
         try {
-        
             dbManager = new DatabaseManager();
         } catch (SQLException e) {
-        // Handle or log the exception appropriately
+            // Handle or log the exception appropriately
             e.printStackTrace();
-        
+
             throw e; // Ensure the exception propagates up to fail the test setup
+        }
     }
-}
 
     @AfterAll
     public void tearDown() throws SQLException {
@@ -51,9 +48,9 @@ public class DatabaseManagerTest {
 
     @Test
     public void testAddAuthorAndRetrieveId() throws SQLException {
-    int authorId = dbManager.ajouterAuteur("john", "alex");
-    assertTrue(authorId > 0, "Author should be added successfully and a valid ID should be returned.");
-}
+        int authorId = dbManager.ajouterAuteur("john", "alex");
+        assertTrue(authorId > 0, "Author should be added successfully and a valid ID should be returned.");
+    }
 
     @Test
     public void testAddAndRetrieveBook() throws SQLException {
@@ -83,7 +80,9 @@ public class DatabaseManagerTest {
                 .orElse(null);
         assertNotNull(retrievedLivre, "The book should be retrieved successfully.");
         assertEquals("TestTitre", retrievedLivre.getTitre(), "The title of the retrieved book should match.");
-        assertEquals("TestNom", retrievedLivre.getAuteur().getNom(), "The author name of the retrieved book should match.");
-        assertEquals("TestPrenom", retrievedLivre.getAuteur().getPrenom(), "The author surname of the retrieved book should match.");
+        assertEquals("TestNom", retrievedLivre.getAuteur().getNom(),
+                "The author name of the retrieved book should match.");
+        assertEquals("TestPrenom", retrievedLivre.getAuteur().getPrenom(),
+                "The author surname of the retrieved book should match.");
     }
 }

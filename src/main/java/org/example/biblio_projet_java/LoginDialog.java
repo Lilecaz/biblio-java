@@ -55,7 +55,6 @@ public class LoginDialog {
                 AlertUtils.showError("Échec de la connexion", "Username ou mot de passe incorrect.");
             }
         } catch (SQLException e) {
-            e.printStackTrace();
             AlertUtils.showError("Erreur de connexion", "Une erreur s'est produite lors de la connexion.");
         }
     }
