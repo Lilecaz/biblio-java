@@ -2,9 +2,9 @@ import org.example.biblio_projet_java.DatabaseManager;
 import org.example.biblio_projet_java.Bibliotheque.Livre;
 import org.example.biblio_projet_java.Bibliotheque.Livre.Auteur;
 import org.junit.jupiter.api.*;
-import org.mockito.InjectMocks;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -13,23 +13,14 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class DatabaseManagerTest {
 
     @Mock
     private DatabaseManager dbManager;
 
-    @BeforeAll
-    public void setup() {
-        MockitoAnnotations.openMocks(this);
-    }
 
-    @AfterAll
-    public void tearDown() throws SQLException {
-        if (dbManager != null) {
-            dbManager.close();
-        }
-    }
 
     @Test
     public void testRegisterUser() throws SQLException {
