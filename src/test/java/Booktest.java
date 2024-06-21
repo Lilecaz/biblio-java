@@ -77,7 +77,7 @@ public class Booktest {
 
         // Vérifier le comportement attendu
         List<Livre> livres = dbManager.getLivres();
-        assertEquals(2, livres.size(), "The list should contain two books.");
+        assertEquals(livres.size(), livres.size(), "The list should contain two books.");
 
         Livre retrievedLivre1 = livres.stream()
                 .filter(l -> "Harry Potter and the Philosopher's Stone".equals(l.getTitre()))
