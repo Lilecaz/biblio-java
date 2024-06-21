@@ -24,12 +24,12 @@ public class DatabaseManagerTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    // @AfterAll
-    // public void tearDown() throws SQLException {
-    //     if (dbManager != null) {
-    //         dbManager.close();
-    //     }
-    // }
+    @AfterAll
+    public void tearDown() throws SQLException {
+        if (dbManager != null) {
+            dbManager.close();
+        }
+    }
 
     @Test
     public void testRegisterUser() throws SQLException {
