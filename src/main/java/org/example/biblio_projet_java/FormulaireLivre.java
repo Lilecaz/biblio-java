@@ -14,16 +14,16 @@ import org.example.biblio_projet_java.Bibliotheque.Livre;
 
 public class FormulaireLivre extends VBox {
 
-    public TextField titreField;
-    public TextField auteurField;
-    public TextField presentationField;
-    public TextField parutionField;
-    public TextField colonneField;
-    public TextField rangeeField;
-    public CheckBox empruntCheckBox;
-    public TextArea resumeArea;
-    public TextField lienField;
-    public Button ajouterButton;
+    public static final TextField titreField = new TextField();
+    public static final TextField auteurField = new TextField();
+    public static final TextField presentationField = new TextField();
+    public static final TextField parutionField = new TextField();
+    public static final TextField colonneField = new TextField();
+    public static final TextField rangeeField = new TextField();
+    public static final CheckBox empruntCheckBox = new CheckBox();
+    public static final TextArea resumeArea = new TextArea();
+    public static final TextField lienField = new TextField();
+    public static final Button ajouterButton = new Button("Ajouter");
 
     public ImageView previewImageView;
 
@@ -36,16 +36,12 @@ public class FormulaireLivre extends VBox {
         previewImageView.setFitWidth(200); // Ajustez la largeur de l'aperçu selon vos besoins
         previewImageView.setPreserveRatio(true);
         Label titreLabel = new Label("Titre: ");
-        titreField = new TextField();
 
         Label auteurLabel = new Label("Auteur: ");
-        auteurField = new TextField();
 
         Label presentationLabel = new Label("Présentation: ");
-        presentationField = new TextField();
 
         Label parutionLabel = new Label("Parution: ");
-        parutionField = new TextField();
         parutionField.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("\\d*")) {
                 parutionField.setText(newValue.replaceAll("[^\\d]", ""));
@@ -53,7 +49,6 @@ public class FormulaireLivre extends VBox {
         });
 
         Label colonneLabel = new Label("Colonne: ");
-        colonneField = new TextField();
         colonneField.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("\\d*")) {
                 colonneField.setText(newValue.replaceAll("[^\\d]", ""));
@@ -61,7 +56,6 @@ public class FormulaireLivre extends VBox {
         });
 
         Label rangeeLabel = new Label("Rangée: ");
-        rangeeField = new TextField();
         rangeeField.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("\\d*")) {
                 rangeeField.setText(newValue.replaceAll("[^\\d]", ""));
@@ -69,27 +63,22 @@ public class FormulaireLivre extends VBox {
         });
 
         Label empruntLabel = new Label("Emprunt: ");
-        empruntCheckBox = new CheckBox();
 
         Label resumeLabel = new Label("Résumé: ");
-        resumeArea = new TextArea();
         resumeArea.setWrapText(true);
         resumeArea.setPrefRowCount(3);
 
         Label lienLabel = new Label("Lien: ");
-        lienField = new TextField();
         lienField.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.isEmpty()) {
                 Image image = new Image(newValue);
                 previewImageView.setImage(image);
-                System.out.println("Image chargée.");
             } else {
                 // Effacer l'aperçu de l'image s'il n'y a pas de lien
                 previewImageView.setImage(null);
             }
         });
 
-        ajouterButton = new Button("Ajouter");
         ajouterButton.setOnAction(event -> {
             if (validateFields() && !alreadyExists(tableView)) {
                 Livre nouveauLivre = new Livre();

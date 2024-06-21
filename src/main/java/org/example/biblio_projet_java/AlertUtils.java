@@ -3,6 +3,10 @@ package org.example.biblio_projet_java;
 import javafx.scene.control.Alert;
 
 public class AlertUtils {
+
+    private AlertUtils() {
+    }
+
     public static void showInformation(String title, String message) {
         showAlert(Alert.AlertType.INFORMATION, title, message);
     }

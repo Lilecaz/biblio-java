@@ -10,7 +10,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import io.github.cdimascio.dotenv.Dotenv;
 
 import org.example.biblio_projet_java.Bibliotheque.Livre;
 
@@ -32,10 +31,8 @@ public class DatabaseManager {
         if (connection == null || connection.isClosed()) {
             try {
                 connection = DriverManager.getConnection(URL, USER, PASSWORD);
-                System.out.println("Connected to " + URL);
 
             } catch (Exception e) {
-                System.out.println(e.getMessage());
             }
         }
     }
@@ -43,7 +40,6 @@ public class DatabaseManager {
     public void close() throws SQLException {
         if (connection != null && !connection.isClosed()) {
             connection.close();
-            System.out.println("db connection closed");
         }
     }
 
@@ -60,7 +56,8 @@ public class DatabaseManager {
             }
             return hexString.toString();
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            return null;
         }
     }
 
@@ -82,7 +79,6 @@ public class DatabaseManager {
             stmt.setString(1, username);
             stmt.setString(2, hashedPassword);
             try (ResultSet rs = stmt.executeQuery()) {
-                System.out.println("User type: " + getUserType(username));
                 setUsername(username);
                 setUserType(getUserType(username));
                 setUserLoggedIn(true);
