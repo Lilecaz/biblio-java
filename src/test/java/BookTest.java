@@ -4,6 +4,7 @@ import org.example.biblio_projet_java.Bibliotheque.Livre.Auteur;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.SQLException;
@@ -19,6 +20,11 @@ public class BookTest {
 
     @Mock
     private DatabaseManager dbManager;
+     @BeforeEach
+    public void setUp() {
+        // Initialisation des mocks
+        MockitoAnnotations.openMocks(this);
+    }
 
 
     @Test
