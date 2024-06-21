@@ -120,7 +120,6 @@ public class FormulaireLivre extends VBox {
                         showAlert("Erreur lors de l'ajout du livre à la base de données.");
                     }
                 } catch (SQLException e) {
-                    e.printStackTrace();
                     showAlert("Erreur lors de l'ajout du livre à la base de données : " + e.getMessage());
                 }
             }

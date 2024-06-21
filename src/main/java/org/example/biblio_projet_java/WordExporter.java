@@ -52,7 +52,6 @@ public class WordExporter {
                 save(file);
             }
         } catch (Exception e) {
-            e.printStackTrace();
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Erreur d'exportation");
             alert.setHeaderText(null);

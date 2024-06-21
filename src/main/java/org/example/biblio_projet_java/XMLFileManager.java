@@ -30,7 +30,6 @@ public class XMLFileManager {
             bibliotheque.getLivre().forEach(tableView::ajouterLivre);
             return file;
         } catch (JAXBException e) {
-            e.printStackTrace();
             Alert alert = new Alert(Alert.AlertType.ERROR, "Erreur lors du chargement du fichier XML.");
             alert.showAndWait();
             return null;
@@ -80,7 +79,6 @@ public class XMLFileManager {
                 }
             }
         } catch (IOException | JAXBException e) {
-            e.printStackTrace();
             // Afficher une alerte en cas d'erreur
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Erreur");

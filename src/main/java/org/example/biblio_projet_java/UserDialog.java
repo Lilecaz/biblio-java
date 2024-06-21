@@ -100,7 +100,6 @@ public class UserDialog {
                             "Nom d'utilisateur ou mot de passe incorrect.");
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
                 showAlert(Alert.AlertType.ERROR, "Erreur", "Une erreur s'est produite.");
             }
         });

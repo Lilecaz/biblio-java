@@ -92,7 +92,7 @@ class FormulaireLivreTest {
             try {
                 livres = dbManager.getLivres();
             } catch (SQLException e) {
-                e.printStackTrace();
+                System.out.println("Erreur lors de la récupération des livres: " + e.getMessage());
             }
 
             // Assurez-vous que le livre a été ajouté
