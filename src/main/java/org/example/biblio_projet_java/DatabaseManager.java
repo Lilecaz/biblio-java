@@ -10,14 +10,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import io.github.cdimascio.dotenv.Dotenv;
 
 import org.example.biblio_projet_java.Bibliotheque.Livre;
 
 public class DatabaseManager {
 
-    private static final String URL = "jdbc:mysql://mysql-celil.alwaysdata.net:3306/celil_biblio";
-    private static final String USER = "celil";
-    private static final String PASSWORD = "biblioesieeit";
+    private static final Dotenv dotenv = Dotenv.load();
     private Connection connection;
     private String usertype;
     private String username;
@@ -30,11 +29,14 @@ public class DatabaseManager {
     private void connect() throws SQLException {
         if (connection == null || connection.isClosed()) {
             try {
-                connection = DriverManager.getConnection(URL, USER, PASSWORD);
-                System.out.println("Connected to " + URL);
-
-            } catch (Exception e) {
+                String url = dotenv.get("DB_URL");
+                String user = dotenv.get("DB_USER");
+                String password = dotenv.get("DB_PASSWORD");
+                connection = DriverManager.getConnection(url, user, password);
+                System.out.println("Connected to " + url);
+            } catch (SQLException e) {
                 System.out.println(e.getMessage());
+                throw e;
             }
         }
     }

@@ -26,6 +26,11 @@
             <scope>test</scope>
     </dependency>
     <dependency>
+        <groupId>io.github.cdimascio</groupId>
+        <artifactId>java-dotenv</artifactId>
+        <version>5.2.0</version>
+    </dependency>
+    <dependency>
     <groupId>org.testfx</groupId>
     <artifactId>testfx-core</artifactId>
     <version>4.0.16-alpha</version>
