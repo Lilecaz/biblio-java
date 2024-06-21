@@ -12,13 +12,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      
-      - name: Load environment variables
-        run: |
-          echo "DB_URL=${{ secrets.DB_URL }}" >> $GITHUB_ENV
-          echo "DB_USER=${{ secrets.DB_USER }}" >> $GITHUB_ENV
-          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> $GITHUB_ENV
-      
       - name: Set up JDK 17
         uses: actions/setup-java@v2
         with:
@@ -31,13 +24,11 @@ jobs:
       - name: Test with Maven
         run: mvn test
         env:
-          DB_URL: ${{ secrets.DB_URL }}
-          DB_USER: ${{ secrets.DB_USER }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-      
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_USER: ${{ secrets.DATABASE_USER }}
+          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
       - name: Generate Javadoc
         run: mvn javadoc:javadoc
-        
 
       # Uncomment and set up the following lines for SonarCloud analysis
       # - name: Analyze with SonarCloud

@@ -1,5 +1,7 @@
 package org.example.biblio_projet_java;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -10,14 +12,36 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import org.example.biblio_projet_java.Bibliotheque.Livre;
 
 public class DatabaseManager {
 
-    private static final String URL = "jdbc:mysql://mysql-celil.alwaysdata.net:3306/celil_biblio";
-    private static final String USER = "celil";
-    private static final String PASSWORD = "biblioesieeit";
+    private static String URL;
+    private static String USER;
+    private static String PASSWORD;
+
+    static {
+        try (InputStream input = DatabaseManager.class.getClassLoader().getResourceAsStream("config.properties")) {
+            Properties prop = new Properties();
+
+            if (input == null) {
+                System.out.println("Sorry, unable to find config.properties");
+            } else {
+                // load a properties file from class path
+                prop.load(input);
+
+                // get the property value
+                URL = prop.getProperty("database.url");
+                USER = prop.getProperty("database.user");
+                PASSWORD = prop.getProperty("database.password");
+            }
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
     private Connection connection;
     private String usertype;
     private String username;
@@ -28,8 +52,10 @@ public class DatabaseManager {
     }
 
     private void connect() throws SQLException {
+        System.out.println("URL: " + URL);
         if (connection == null || connection.isClosed()) {
             try {
+
                 connection = DriverManager.getConnection(URL, USER, PASSWORD);
 
             } catch (Exception e) {
