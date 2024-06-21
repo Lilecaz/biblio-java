@@ -37,6 +37,7 @@ jobs:
       
       - name: Generate Javadoc
         run: mvn javadoc:javadoc
+        
 
       # Uncomment and set up the following lines for SonarCloud analysis
       # - name: Analyze with SonarCloud
