@@ -14,18 +14,18 @@ import org.example.biblio_projet_java.Bibliotheque.Livre;
 
 public class FormulaireLivre extends VBox {
 
-    private TextField titreField;
-    private TextField auteurField;
-    private TextField presentationField;
-    private TextField parutionField;
-    private TextField colonneField;
-    private TextField rangeeField;
-    private CheckBox empruntCheckBox;
-    private TextArea resumeArea;
-    private TextField lienField;
-    private Button ajouterButton;
+    public TextField titreField;
+    public TextField auteurField;
+    public TextField presentationField;
+    public TextField parutionField;
+    public TextField colonneField;
+    public TextField rangeeField;
+    public CheckBox empruntCheckBox;
+    public TextArea resumeArea;
+    public TextField lienField;
+    public Button ajouterButton;
 
-    private ImageView previewImageView;
+    public ImageView previewImageView;
 
     private DatabaseManager dbManager;
 
@@ -194,7 +194,7 @@ public class FormulaireLivre extends VBox {
         alert.showAndWait();
     }
 
-    private boolean alreadyExists(LivreTableView tableView) {
+    public boolean alreadyExists(LivreTableView tableView) {
         String nomLivre = titreField.getText();
         int anneeParution = Integer.parseInt(parutionField.getText());
 
