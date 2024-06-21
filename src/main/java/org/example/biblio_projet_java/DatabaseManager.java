@@ -39,7 +39,6 @@ public class DatabaseManager {
             }
 
         } catch (IOException ex) {
-            ex.printStackTrace();
         }
     }
     private Connection connection;
