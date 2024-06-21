@@ -11,6 +11,12 @@ import java.util.Optional;
 
 public class UserDialog {
 
+    /**
+     * Affiche une boîte de dialogue de connexion.
+     * 
+     * @param primaryStage    la fenêtre principale de l'application
+     * @param databaseManager le gestionnaire de base de données
+     */
     public static void showLoginDialog(Stage primaryStage, DatabaseManager databaseManager) {
         Dialog<Pair<String, String>> dialog = createDialog("Se connecter", "Login");
         GridPane grid = createGridPane();
@@ -26,6 +32,12 @@ public class UserDialog {
         processDialogResult(dialog.showAndWait(), databaseManager, false);
     }
 
+    /**
+     * Affiche une boîte de dialogue pour l'inscription d'un utilisateur.
+     *
+     * @param primaryStage    la fenêtre principale de l'application
+     * @param databaseManager le gestionnaire de base de données
+     */
     public static void showSignUpDialog(Stage primaryStage, DatabaseManager databaseManager) {
         Dialog<Pair<String, String>> dialog = createDialog("S'inscrire", "Sign Up");
         GridPane grid = createGridPane();
@@ -49,6 +61,13 @@ public class UserDialog {
         processDialogResult(dialog.showAndWait(), databaseManager, true);
     }
 
+    /**
+     * Crée une boîte de dialogue avec un titre et un bouton personnalisés.
+     *
+     * @param title      Le titre de la boîte de dialogue.
+     * @param buttonText Le texte du bouton personnalisé.
+     * @return La boîte de dialogue créée.
+     */
     private static Dialog<Pair<String, String>> createDialog(String title, String buttonText) {
         Dialog<Pair<String, String>> dialog = new Dialog<>();
         dialog.setTitle(title);
@@ -58,6 +77,11 @@ public class UserDialog {
         return dialog;
     }
 
+    /**
+     * Crée et retourne un objet GridPane avec les paramètres par défaut.
+     *
+     * @return L'objet GridPane créé.
+     */
     private static GridPane createGridPane() {
         GridPane grid = new GridPane();
         grid.setHgap(10);
@@ -66,6 +90,16 @@ public class UserDialog {
         return grid;
     }
 
+    /**
+     * Ajoute les champs à la grille spécifiée.
+     *
+     * @param grid            la grille dans laquelle les champs doivent être
+     *                        ajoutés
+     * @param username        le champ de texte pour le nom d'utilisateur
+     * @param password        le champ de texte pour le mot de passe
+     * @param confirmPassword le champ de texte pour la confirmation du mot de passe
+     *                        (peut être null)
+     */
     private static void addFieldsToGrid(GridPane grid, TextField username, PasswordField password,
             PasswordField confirmPassword) {
         username.setPromptText("Username");
@@ -81,6 +115,15 @@ public class UserDialog {
         }
     }
 
+    /**
+     * Traite le résultat d'une boîte de dialogue.
+     *
+     * @param result          Le résultat de la boîte de dialogue, contenant une
+     *                        paire de nom d'utilisateur et mot de passe.
+     * @param databaseManager Le gestionnaire de base de données.
+     * @param isSignUp        Indique si l'action est une inscription ou une
+     *                        connexion.
+     */
     private static void processDialogResult(Optional<Pair<String, String>> result, DatabaseManager databaseManager,
             boolean isSignUp) {
         if (!result.isPresent())
@@ -105,6 +148,14 @@ public class UserDialog {
         });
     }
 
+    /**
+     * Affiche une boîte de dialogue avec le type d'alerte spécifié, le titre et le
+     * message donnés.
+     *
+     * @param alertType le type d'alerte à afficher
+     * @param title     le titre de la boîte de dialogue
+     * @param message   le message à afficher dans la boîte de dialogue
+     */
     private static void showAlert(Alert.AlertType alertType, String title, String message) {
         Alert alert = new Alert(alertType);
         alert.setTitle(title);

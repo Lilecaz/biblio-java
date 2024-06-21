@@ -10,6 +10,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import org.example.biblio_projet_java.Bibliotheque.Livre;
+import org.example.biblio_projet_java.view.LivreTableView;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,6 +19,13 @@ import java.util.Optional;
 
 public class XMLFileManager {
 
+    /**
+     * Charge un fichier XML contenant les données d'une bibliothèque.
+     * 
+     * @param file      le fichier XML à charger
+     * @param tableView la table view dans laquelle afficher les livres chargés
+     * @return le fichier XML chargé, ou null en cas d'erreur
+     */
     public static File chargerFichierXML(File file, LivreTableView tableView) {
         try {
 
@@ -36,6 +44,14 @@ public class XMLFileManager {
         }
     }
 
+    /**
+     * Sauvegarde les livres dans un fichier XML.
+     *
+     * @param file   Le fichier dans lequel les livres doivent être sauvegardés.
+     * @param livres La liste des livres à sauvegarder.
+     * @return Le fichier dans lequel les livres ont été sauvegardés, ou null si
+     *         l'opération a été annulée ou a échoué.
+     */
     public static File sauvegarderFichierXML(File file, List<Livre> livres) {
         try {
             JAXBContext context = JAXBContext.newInstance(Bibliotheque.class);

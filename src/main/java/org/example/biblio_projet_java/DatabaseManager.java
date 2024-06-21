@@ -1,5 +1,7 @@
 package org.example.biblio_projet_java;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -10,13 +12,38 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import io.github.cdimascio.dotenv.Dotenv;
+import java.util.Properties;
 
 import org.example.biblio_projet_java.Bibliotheque.Livre;
 
+/**
+ * Cette classe gère la connexion à la base de données et les opérations liées à celle-ci.
+ */
 public class DatabaseManager {
 
-    private static final Dotenv dotenv = Dotenv.load();
+    private static String URL;
+    private static String USER;
+    private static String PASSWORD;
+
+    static {
+        try (InputStream input = DatabaseManager.class.getClassLoader().getResourceAsStream("config.properties")) {
+            Properties prop = new Properties();
+
+            if (input == null) {
+                System.out.println("Sorry, unable to find config.properties");
+            } else {
+                // load a properties file from class path
+                prop.load(input);
+
+                // get the property value
+                URL = prop.getProperty("database.url");
+                USER = prop.getProperty("database.user");
+                PASSWORD = prop.getProperty("database.password");
+            }
+
+        } catch (IOException ex) {
+        }
+    }
     private Connection connection;
     private String usertype;
     private String username;
@@ -26,28 +53,42 @@ public class DatabaseManager {
         connect();
     }
 
+    /**
+     * Connecte à la base de données si la connexion est fermée ou nulle.
+     * Affiche l'URL de la base de données.
+     *
+     * @throws SQLException si une erreur d'accès à la base de données se produit
+     */
     private void connect() throws SQLException {
+        System.out.println("URL: " + URL);
         if (connection == null || connection.isClosed()) {
             try {
-                String url = dotenv.get("DB_URL");
-                String user = dotenv.get("DB_USER");
-                String password = dotenv.get("DB_PASSWORD");
-                connection = DriverManager.getConnection(url, user, password);
-                System.out.println("Connected to " + url);
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-                throw e;
+
+                connection = DriverManager.getConnection(URL, USER, PASSWORD);
+
+            } catch (Exception e) {
             }
         }
     }
 
+    /**
+     * Ferme la connexion à la base de données.
+     *
+     * @throws SQLException si une erreur survient lors de la fermeture de la
+     *                      connexion.
+     */
     public void close() throws SQLException {
         if (connection != null && !connection.isClosed()) {
             connection.close();
-            System.out.println("db connection closed");
         }
     }
 
+    /**
+     * Methode pour hasher le mot de passe
+     *
+     * @param password le mot de passe à hasher
+     * @return le mot de passe hashé
+     */
     private String hashPassword(String password) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -61,10 +102,19 @@ public class DatabaseManager {
             }
             return hexString.toString();
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
+            return null;
         }
     }
 
+    /**
+     * Enregistre un utilisateur dans la base de données.
+     *
+     * @param username Le nom d'utilisateur de l'utilisateur à enregistrer.
+     * @param password Le mot de passe de l'utilisateur à enregistrer.
+     * @return true si l'utilisateur a été enregistré avec succès, sinon false.
+     * @throws SQLException Si une erreur se produit lors de l'exécution de la
+     *                      requête SQL.
+     */
     public boolean registerUser(String username, String password) throws SQLException {
         String hashedPassword = hashPassword(password);
         String query = "INSERT INTO users (username, usertype, password, register_date) VALUES (?, 'user', ?, CURRENT_DATE())";
@@ -76,6 +126,16 @@ public class DatabaseManager {
         }
     }
 
+    /**
+     * Authentifie un utilisateur en vérifiant les informations de connexion
+     * fournies.
+     *
+     * @param username le nom d'utilisateur de l'utilisateur
+     * @param password le mot de passe de l'utilisateur
+     * @return true si l'utilisateur est authentifié avec succès, sinon false
+     * @throws SQLException si une erreur se produit lors de l'exécution de la
+     *                      requête SQL
+     */
     public boolean loginUser(String username, String password) throws SQLException {
         String hashedPassword = hashPassword(password);
         String query = "SELECT * FROM users WHERE username = ? AND password = ?";
@@ -83,7 +143,6 @@ public class DatabaseManager {
             stmt.setString(1, username);
             stmt.setString(2, hashedPassword);
             try (ResultSet rs = stmt.executeQuery()) {
-                System.out.println("User type: " + getUserType(username));
                 setUsername(username);
                 setUserType(getUserType(username));
                 setUserLoggedIn(true);
@@ -92,11 +151,25 @@ public class DatabaseManager {
         }
     }
 
+    /**
+     * Déconnecte l'utilisateur en réinitialisant le nom d'utilisateur et le type
+     * d'utilisateur.
+     */
     public void logout() {
         setUsername(null);
         setUserType(null);
     }
 
+    /**
+     * Récupère le type d'utilisateur pour un nom d'utilisateur donné.
+     *
+     * @param username le nom d'utilisateur pour lequel récupérer le type
+     *                 d'utilisateur
+     * @return le type d'utilisateur correspondant au nom d'utilisateur donné, ou
+     *         null si aucun résultat n'est trouvé
+     * @throws SQLException si une erreur se produit lors de l'exécution de la
+     *                      requête SQL
+     */
     public String getUserType(String username) throws SQLException {
         String query = "SELECT usertype FROM users WHERE username = ?";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
@@ -111,6 +184,15 @@ public class DatabaseManager {
         }
     }
 
+    /**
+     * Récupère l'identifiant d'un auteur à partir de son nom et prénom.
+     * 
+     * @param nom    le nom de l'auteur
+     * @param prenom le prénom de l'auteur
+     * @return l'identifiant de l'auteur, ou -1 si l'auteur n'existe pas
+     * @throws SQLException si une erreur SQL se produit lors de l'exécution de la
+     *                      requête
+     */
     public int getAuteurId(String nom, String prenom) throws SQLException {
         String query = "SELECT id FROM auteurs WHERE nom = ? AND prenom = ?";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
@@ -125,6 +207,15 @@ public class DatabaseManager {
         return -1; // Indique que l'auteur n'existe pas
     }
 
+    /**
+     * Ajoute un auteur à la base de données.
+     * 
+     * @param nom    le nom de l'auteur
+     * @param prenom le prénom de l'auteur
+     * @return l'ID généré de l'auteur ajouté, ou -1 en cas d'échec de l'insertion
+     * @throws SQLException si une erreur SQL se produit lors de l'exécution de la
+     *                      requête
+     */
     public int ajouterAuteur(String nom, String prenom) throws SQLException {
         String query = "INSERT INTO auteurs (nom, prenom) VALUES (?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
@@ -140,6 +231,13 @@ public class DatabaseManager {
         return -1; // Échec de l'insertion
     }
 
+    /**
+     * Ajoute un livre à la base de données.
+     * 
+     * @param livre Le livre à ajouter.
+     * @return true si le livre a été ajouté avec succès, sinon false.
+     * @throws SQLException Si une erreur se produit lors de l'ajout du livre.
+     */
     public boolean ajouterLivre(Livre livre) throws SQLException {
         // Vérifiez si l'auteur existe déjà
         String nom = livre.getAuteur().getNom();
@@ -170,6 +268,13 @@ public class DatabaseManager {
         }
     }
 
+    /**
+     * Récupère la liste des livres de la base de données.
+     * 
+     * @return Une liste d'objets Livre contenant les informations des livres.
+     * @throws SQLException Si une erreur se produit lors de l'exécution de la
+     *                      requête SQL.
+     */
     public List<Livre> getLivres() throws SQLException {
         List<Livre> livres = new ArrayList<>();
         String query = "SELECT l.titre, l.presentation, l.parution, l.colonne, l.rangee, l.emprunt, l.resume, l.lien, a.nom, a.prenom "

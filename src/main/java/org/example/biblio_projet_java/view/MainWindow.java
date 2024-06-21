@@ -1,4 +1,4 @@
-package org.example.biblio_projet_java;
+package org.example.biblio_projet_java.view;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -12,6 +12,12 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Optional;
+
+import org.example.biblio_projet_java.DatabaseManager;
+import org.example.biblio_projet_java.UserDialog;
+import org.example.biblio_projet_java.WordExporter;
+import org.example.biblio_projet_java.XMLFileManager;
+
 import javafx.geometry.Insets;
 import javafx.scene.layout.GridPane;
 import javafx.util.Pair;
@@ -22,6 +28,13 @@ public class MainWindow extends Application {
     private DatabaseManager databaseManager;
     private LivreTableView tableView;
 
+    /**
+     * Démarre l'application en créant une nouvelle fenêtre principale.
+     * 
+     * @param primaryStage la fenêtre principale de l'application
+     * @throws SQLException si une erreur se produit lors de la connexion à la base
+     *                      de données
+     */
     @Override
     public void start(Stage primaryStage) throws SQLException {
         databaseManager = new DatabaseManager();
@@ -34,6 +47,13 @@ public class MainWindow extends Application {
         primaryStage.show();
     }
 
+    /**
+     * Crée une boîte de démarrage contenant des boutons pour se connecter,
+     * s'inscrire et ouvrir un fichier.
+     * 
+     * @param primaryStage la fenêtre principale de l'application
+     * @return la boîte de démarrage créée
+     */
     private VBox createStartBox(Stage primaryStage) {
         VBox startBox = new VBox(10);
         startBox.setPrefSize(300, 200);
@@ -59,6 +79,12 @@ public class MainWindow extends Application {
         return startBox;
     }
 
+    /**
+     * Ouvre une boîte de dialogue pour sélectionner un fichier XML, puis affiche la
+     * fenêtre principale avec le fichier sélectionné.
+     *
+     * @param primaryStage la fenêtre principale de l'application
+     */
     private void openFile(Stage primaryStage) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Ouvrir un fichier XML");
@@ -69,6 +95,12 @@ public class MainWindow extends Application {
         }
     }
 
+    /**
+     * Affiche la fenêtre principale de l'application.
+     * 
+     * @param primaryStage la fenêtre principale de l'application
+     * @param fileToLoad   le fichier à charger (peut être null)
+     */
     private void showMainWindow(Stage primaryStage, File fileToLoad) {
         tableView = new LivreTableView();
         FormulaireLivre formulaireLivre = new FormulaireLivre(tableView, databaseManager);
@@ -98,6 +130,12 @@ public class MainWindow extends Application {
         primaryStage.show();
     }
 
+    /**
+     * Crée et retourne une barre de menu pour la fenêtre principale.
+     *
+     * @param primaryStage la fenêtre principale de l'application
+     * @return la barre de menu créée
+     */
     private MenuBar createMenuBar(Stage primaryStage) {
         MenuItem menuItem1 = new MenuItem("Ouvrir");
         menuItem1.setOnAction(event -> openFile(primaryStage));
@@ -140,6 +178,10 @@ public class MainWindow extends Application {
         return menuBar;
     }
 
+    /**
+     * Sauvegarde le fichier XML actuellement ouvert.
+     * Si aucun fichier n'est actuellement ouvert, affiche une alerte d'information.
+     */
     private void saveFile() {
         if (currentFile != null) {
             XMLFileManager.sauvegarderFichierXML(currentFile, tableView.getItems());
@@ -148,6 +190,11 @@ public class MainWindow extends Application {
         }
     }
 
+    /**
+     * Sauvegarde le fichier XML en tant que nouveau fichier.
+     * 
+     * @param primaryStage la fenêtre principale de l'application
+     */
     private void saveFileAs(Stage primaryStage) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Sauvegarder un fichier XML");
@@ -158,6 +205,11 @@ public class MainWindow extends Application {
         }
     }
 
+    /**
+     * Exporte les données de la table dans un document Word.
+     * 
+     * @param primaryStage la fenêtre principale de l'application
+     */
     private void exportDocument(Stage primaryStage) {
         if (!tableView.getItems().isEmpty()) {
             TextInputDialog dialog = new TextInputDialog();
@@ -182,19 +234,46 @@ public class MainWindow extends Application {
         }
     }
 
+    /**
+     * Déconnecte l'utilisateur actuellement connecté.
+     * Réinitialise la scène principale avec une nouvelle VBox vide.
+     * Met à jour l'état de connexion de l'utilisateur dans le gestionnaire de base
+     * de données.
+     *
+     * @param primaryStage la fenêtre principale de l'application
+     */
     private void logout(Stage primaryStage) {
+        databaseManager.logout();
         primaryStage.setScene(new Scene(new VBox(10)));
         databaseManager.setUserLoggedIn(false);
     }
 
+    /**
+     * Affiche la boîte de dialogue de connexion.
+     * 
+     * @param primaryStage la fenêtre principale de l'application
+     */
     public void showLoginDialog(Stage primaryStage) {
         UserDialog.showLoginDialog(primaryStage, databaseManager);
     }
 
+    /**
+     * Affiche la boîte de dialogue d'inscription.
+     * 
+     * @param primaryStage la fenêtre principale de l'application
+     */
     public void showSignUpDialog(Stage primaryStage) {
         UserDialog.showSignUpDialog(primaryStage, databaseManager);
     }
 
+    /**
+     * Affiche une boîte de dialogue d'alerte avec le type d'alerte spécifié, le
+     * titre et le message donnés.
+     *
+     * @param alertType le type d'alerte à afficher (Alert.AlertType)
+     * @param title     le titre de l'alerte
+     * @param message   le message de l'alerte
+     */
     private void showAlert(Alert.AlertType alertType, String title, String message) {
         Alert alert = new Alert(alertType);
         alert.setTitle(title);
