@@ -29,6 +29,13 @@ public class FormulaireLivre extends VBox {
 
     private DatabaseManager dbManager;
 
+    /**
+     * Cette classe représente un formulaire pour ajouter un livre.
+     * 
+     * @param tableView La table view dans laquelle le livre sera ajouté.
+     * @param dbManager Le gestionnaire de base de données utilisé pour ajouter le
+     *                  livre.
+     */
     public FormulaireLivre(LivreTableView tableView, DatabaseManager dbManager) {
         this.dbManager = dbManager;
 
@@ -136,6 +143,11 @@ public class FormulaireLivre extends VBox {
         this.getStyleClass().add("formulaire");
     }
 
+    /**
+     * Valide les champs du formulaire.
+     * 
+     * @return true si tous les champs sont valides, sinon false.
+     */
     private boolean validateFields() {
         if (titreField.getText().isEmpty() || auteurField.getText().isEmpty() ||
                 presentationField.getText().isEmpty() || parutionField.getText().isEmpty() ||
@@ -165,6 +177,9 @@ public class FormulaireLivre extends VBox {
         return true;
     }
 
+    /**
+     * Efface les champs du formulaire.
+     */
     private void clearFields() {
         titreField.clear();
         auteurField.clear();
@@ -174,6 +189,11 @@ public class FormulaireLivre extends VBox {
         rangeeField.clear();
     }
 
+    /**
+     * Affiche une alerte de type avertissement avec le message spécifié.
+     *
+     * @param message le message à afficher dans l'alerte
+     */
     private void showAlert(String message) {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle("Attention");
@@ -182,6 +202,12 @@ public class FormulaireLivre extends VBox {
         alert.showAndWait();
     }
 
+    /**
+     * Vérifie si un livre existe déjà dans la bibliothèque.
+     * 
+     * @param tableView la table view contenant les livres de la bibliothèque
+     * @return true si le livre existe déjà, false sinon
+     */
     public boolean alreadyExists(LivreTableView tableView) {
         String nomLivre = titreField.getText();
         int anneeParution = Integer.parseInt(parutionField.getText());
@@ -198,6 +224,12 @@ public class FormulaireLivre extends VBox {
         return false;
     }
 
+    /**
+     * Charge les livres depuis la base de données et les ajoute à la TableView
+     * spécifiée.
+     *
+     * @param tableView la TableView dans laquelle les livres doivent être ajoutés
+     */
     public void chargerLivresDansTableView(LivreTableView tableView) {
         try {
             List<Livre> livres = dbManager.getLivres();

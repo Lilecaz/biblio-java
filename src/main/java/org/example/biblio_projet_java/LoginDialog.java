@@ -11,10 +11,20 @@ import java.util.Optional;
 public class LoginDialog {
     private DatabaseManager databaseManager;
 
+    /**
+     * Cette classe représente une boîte de dialogue de connexion.
+     * Elle permet à l'utilisateur de se connecter à la base de données en utilisant
+     * un objet DatabaseManager.
+     */
     public LoginDialog(DatabaseManager databaseManager) {
         this.databaseManager = databaseManager;
     }
 
+    /**
+     * Affiche la boîte de dialogue de connexion.
+     * 
+     * @param primaryStage la fenêtre principale de l'application
+     */
     public void show(Stage primaryStage) {
         Dialog<Pair<String, String>> dialog = new Dialog<>();
         dialog.setTitle("Se connecter");
@@ -46,6 +56,14 @@ public class LoginDialog {
         result.ifPresent(credentials -> handleLogin(credentials, primaryStage));
     }
 
+    /**
+     * Gère la tentative de connexion de l'utilisateur avec les informations
+     * d'identification fournies.
+     * 
+     * @param credentials  les informations d'identification de l'utilisateur (nom
+     *                     d'utilisateur et mot de passe)
+     * @param primaryStage la fenêtre principale de l'application
+     */
     private void handleLogin(Pair<String, String> credentials, Stage primaryStage) {
         try {
             if (databaseManager.loginUser(credentials.getKey(), credentials.getValue())) {

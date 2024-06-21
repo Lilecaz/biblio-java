@@ -12,6 +12,14 @@ import javafx.util.Callback;
 import javafx.util.converter.IntegerStringConverter;
 import javafx.util.converter.ShortStringConverter;
 
+/**
+ * Cette classe représente une vue de tableau pour les livres.
+ * Elle étend la classe TableView et affiche les informations des livres dans
+ * des colonnes.
+ * Les colonnes incluent le titre, l'auteur, la présentation, la parution, la
+ * colonne, la rangée, l'emprunt, le résumé et le lien.
+ * Elle permet également de supprimer des livres de la table.
+ */
 public class LivreTableView extends TableView<Bibliotheque.Livre> {
 
     @SuppressWarnings("unchecked")
@@ -124,26 +132,56 @@ public class LivreTableView extends TableView<Bibliotheque.Livre> {
                 resumeCol, lienCol, deleteCol);
     }
 
+    /**
+     * Ajoute un livre à la liste des livres affichés dans la table.
+     *
+     * @param nouveauLivre Le livre à ajouter.
+     */
     public void ajouterLivre(Livre nouveauLivre) {
         getItems().add(nouveauLivre);
     }
 
+    /**
+     * Supprime un livre de la table de vue.
+     * 
+     * @param livre Le livre à supprimer.
+     */
     public void supprimerLivre(Bibliotheque.Livre livre) {
         getItems().remove(livre);
     }
 
+    /**
+     * Modifie un livre dans la table de vue.
+     *
+     * @param livre Le livre à modifier.
+     */
     public void modifierLivre(Bibliotheque.Livre livre) {
         getItems().set(getItems().indexOf(livre), livre);
     }
 
+    /**
+     * Affiche le livre spécifié dans la table.
+     * 
+     * @param livre Le livre à afficher.
+     */
     public void afficherLivre(Bibliotheque.Livre livre) {
         getSelectionModel().select(livre);
     }
 
+    /**
+     * Renvoie la vue de la table pour l'objet Livre.
+     *
+     * @return La vue de la table pour l'objet Livre.
+     */
     public Node getTableView() {
         return this;
     }
 
+    /**
+     * Renvoie le livre sélectionné dans la table.
+     *
+     * @return le livre sélectionné dans la table.
+     */
     public Bibliotheque.Livre getLivreSelectionne() {
         return getSelectionModel().getSelectedItem();
     }

@@ -31,6 +31,13 @@ public class WordExporter {
         this.document = new XWPFDocument();
     }
 
+    /**
+     * Exporte la liste des livres dans un document Word.
+     * 
+     * @param livres        la liste des livres à exporter
+     * @param titreDocument le titre du document
+     * @param primaryStage  la fenêtre principale de l'application
+     */
     public void export(List<Livre> livres, String titreDocument, Stage primaryStage) {
         try {
             // Ajouter la page de garde
@@ -60,6 +67,11 @@ public class WordExporter {
         }
     }
 
+    /**
+     * Ajoute une page de titre au document avec le titre spécifié.
+     *
+     * @param titreDocument Le titre du document.
+     */
     private void addTitlePage(String titreDocument) {
         XWPFParagraph titlePageParagraph = document.createParagraph();
         titlePageParagraph.setAlignment(ParagraphAlignment.CENTER);
@@ -78,6 +90,11 @@ public class WordExporter {
         titlePageParagraph.setPageBreak(true); // Sauter à la page suivante
     }
 
+    /**
+     * Ajoute un sommaire au document.
+     * Le sommaire est créé avec le titre "Table des matières" et contient les
+     * styles personnalisés "heading 1" et "heading 2".
+     */
     private void addTableOfContent() {
         // Créer le sommaire
         XWPFParagraph tocParagraph = document.createParagraph();
@@ -98,6 +115,11 @@ public class WordExporter {
         addCustomHeadingStyle(document, "heading 2", 2);
     }
 
+    /**
+     * Ajoute les livres à un document Word.
+     * 
+     * @param livres La liste des livres à ajouter.
+     */
     private void addLivres(List<Livre> livres) {
         for (Livre livre : livres) {
             // Ajouter les détails du livre avec les styles personnalisés
@@ -109,6 +131,13 @@ public class WordExporter {
         }
     }
 
+    /**
+     * Ajoute un style d'en-tête personnalisé au document Word.
+     *
+     * @param document     Le document Word auquel ajouter le style.
+     * @param strStyleId   L'identifiant du style.
+     * @param headingLevel Le niveau de l'en-tête.
+     */
     private static void addCustomHeadingStyle(XWPFDocument document, String strStyleId, int headingLevel) {
         CTStyle ctStyle = CTStyle.Factory.newInstance();
         ctStyle.setStyleId(strStyleId);
@@ -139,6 +168,12 @@ public class WordExporter {
         styles.addStyle(style);
     }
 
+    /**
+     * Ajoute les détails d'un livre au document Word.
+     * 
+     * @param document Le document Word auquel ajouter les détails du livre.
+     * @param livre    Le livre dont les détails doivent être ajoutés.
+     */
     private static void addLivreDetails(XWPFDocument document, Livre livre) {
         // Titre du livre
         XWPFParagraph titleParagraph = document.createParagraph();
@@ -169,6 +204,11 @@ public class WordExporter {
         contentRun.addBreak();
     }
 
+    /**
+     * Enregistre le document dans un fichier.
+     *
+     * @param file le fichier dans lequel enregistrer le document
+     */
     public void save(File file) {
         try (FileOutputStream out = new FileOutputStream(file)) {
             document.write(out);
