@@ -10,6 +10,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import org.example.biblio_projet_java.Bibliotheque.Livre;
+import org.example.biblio_projet_java.view.LivreTableView;
 
 import java.io.File;
 import java.io.IOException;

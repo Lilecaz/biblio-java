@@ -1,5 +1,6 @@
-package org.example.biblio_projet_java;
+package org.example.biblio_projet_java.view;
 
+import org.example.biblio_projet_java.Bibliotheque;
 import org.example.biblio_projet_java.Bibliotheque.Livre;
 
 import javafx.beans.property.ReadOnlyObjectWrapper;

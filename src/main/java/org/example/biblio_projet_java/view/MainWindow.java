@@ -1,4 +1,4 @@
-package org.example.biblio_projet_java;
+package org.example.biblio_projet_java.view;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -12,6 +12,12 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Optional;
+
+import org.example.biblio_projet_java.DatabaseManager;
+import org.example.biblio_projet_java.UserDialog;
+import org.example.biblio_projet_java.WordExporter;
+import org.example.biblio_projet_java.XMLFileManager;
+
 import javafx.geometry.Insets;
 import javafx.scene.layout.GridPane;
 import javafx.util.Pair;

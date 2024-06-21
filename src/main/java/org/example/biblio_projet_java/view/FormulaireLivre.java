@@ -1,4 +1,4 @@
-package org.example.biblio_projet_java;
+package org.example.biblio_projet_java.view;
 
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
@@ -10,7 +10,10 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.example.biblio_projet_java.Bibliotheque;
+import org.example.biblio_projet_java.DatabaseManager;
 import org.example.biblio_projet_java.Bibliotheque.Livre;
+import org.example.biblio_projet_java.Bibliotheque.Livre.Auteur;
 
 public class FormulaireLivre extends VBox {
 
