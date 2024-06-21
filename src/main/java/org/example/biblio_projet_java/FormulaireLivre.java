@@ -147,7 +147,7 @@ public class FormulaireLivre extends VBox {
 
         this.getStyleClass().add("formulaire");
     }
-   
+
     private boolean validateFields() {
         if (titreField.getText().isEmpty() || auteurField.getText().isEmpty() ||
                 presentationField.getText().isEmpty() || parutionField.getText().isEmpty() ||
@@ -209,12 +209,12 @@ public class FormulaireLivre extends VBox {
         }
         return false;
     }
+
     public void chargerLivresDansTableView(LivreTableView tableView) {
         try {
             List<Livre> livres = dbManager.getLivres();
             tableView.getItems().addAll(livres);
         } catch (SQLException e) {
-            e.printStackTrace();
             showAlert("Erreur lors du chargement des livres depuis la base de données : " + e.getMessage());
         }
     }
