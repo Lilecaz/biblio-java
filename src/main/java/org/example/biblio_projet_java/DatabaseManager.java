@@ -56,7 +56,6 @@ public class DatabaseManager {
             }
             return hexString.toString();
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
             return null;
         }
     }
