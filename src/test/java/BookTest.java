@@ -24,12 +24,13 @@ public class BookTest {
     @BeforeEach
     public void setUp() {
         // Initialisation des mocks
-        MockitoAnnotations.openMocks(this);
     }
 
     @Test
     public void testMultipleBooksAdditionAndVerification() throws SQLException {
         // Configurer le comportement du mock pour ajouter des livres
+        MockitoAnnotations.openMocks(this);
+
         Auteur auteur1 = new Auteur();
         auteur1.setNom("Rowling");
         auteur1.setPrenom("J.K.");
@@ -105,6 +106,8 @@ public class BookTest {
     public void testIncorrectBookDetails() throws SQLException {
         // Configurer le comportement du mock pour ajouter un livre avec des détails
         // incorrects
+        MockitoAnnotations.openMocks(this);
+
         Auteur auteur = new Auteur();
         auteur.setNom("FakeName");
         auteur.setPrenom("FakeSurname");
