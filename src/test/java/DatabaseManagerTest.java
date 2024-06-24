@@ -20,24 +20,23 @@ public class DatabaseManagerTest {
 
     @Mock
     private DatabaseManager dbManager;
-     @BeforeEach
+
+    @BeforeEach
     public void setUp() {
         // Initialisation des mocks
         MockitoAnnotations.openMocks(this);
     }
 
-
-
     @Test
     public void testRegisterUser() throws SQLException {
-        when(dbManager.registerUser("testUser", "testPassword")).thenReturn(true);
+        doReturn(true).when(dbManager).registerUser("testUser", "testPassword");
         boolean isRegistered = dbManager.registerUser("testUser", "testPassword");
         assertTrue(isRegistered, "User should be registered successfully.");
     }
 
     @Test
     public void testLoginUser() throws SQLException {
-        when(dbManager.loginUser("test1", "test")).thenReturn(true);
+        doReturn(true).when(dbManager).loginUser("test1", "test");
         boolean isLoggedIn = dbManager.loginUser("test1", "test");
         assertTrue(isLoggedIn, "User should be able to log in successfully.");
         dbManager.logout();
@@ -45,7 +44,7 @@ public class DatabaseManagerTest {
 
     @Test
     public void testAddAuthorAndRetrieveId() throws SQLException {
-        when(dbManager.ajouterAuteur("john", "alex")).thenReturn(1);
+        doReturn(1).when(dbManager).ajouterAuteur("john", "alex");
         int authorId = dbManager.ajouterAuteur("john", "alex");
         assertTrue(authorId > 0, "Author should be added successfully and a valid ID should be returned.");
     }
@@ -67,7 +66,7 @@ public class DatabaseManagerTest {
         livre.setResume("TestResume");
         livre.setLien("TestLien");
 
-        when(dbManager.ajouterLivre(livre)).thenReturn(true);
+        doReturn(true).when(dbManager).ajouterLivre(livre);
 
         List<Livre> livres = new ArrayList<>();
         livres.add(livre);
