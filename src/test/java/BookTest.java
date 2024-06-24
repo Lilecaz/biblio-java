@@ -18,8 +18,8 @@ import static org.mockito.Mockito.*;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class BookTest {
 
-    @Mock
-    private DatabaseManager dbManager;
+    // @Mock
+    // private DatabaseManager dbManager;
 
     @BeforeEach
     public void setUp() {
@@ -31,7 +31,7 @@ public class BookTest {
     @Test
     public void testMultipleBooksAdditionAndVerification() throws SQLException {
         // Configurer le comportement du mock pour ajouter des livres
-        dbManager = mock(DatabaseManager.class);
+        DatabaseManager dbManager = mock(DatabaseManager.class);
         Auteur auteur1 = new Auteur();
         auteur1.setNom("Rowling");
         auteur1.setPrenom("J.K.");
@@ -107,7 +107,7 @@ public class BookTest {
     public void testIncorrectBookDetails() throws SQLException {
         // Configurer le comportement du mock pour ajouter un livre avec des détails
         // incorrects
-        dbManager = mock(DatabaseManager.class);
+        DatabaseManager dbManager = mock(DatabaseManager.class);
         Auteur auteur = new Auteur();
         auteur.setNom("FakeName");
         auteur.setPrenom("FakeSurname");
