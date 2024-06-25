@@ -54,10 +54,10 @@ public class DatabaseManagerTest {
         auteur.setPrenom("TestPrenom");
 
         Livre livre = new Livre();
-        livre.setTitre("TestTitre");
+        livre.setTitre("Pavel");
         livre.setAuteur(auteur);
         livre.setPresentation("TestPresentation");
-        livre.setParution(2023);
+        livre.setParution(2021);
         livre.setColonne((short) 1);
         livre.setRangee((short) 1);
         livre.setEmprunt(false);
@@ -75,7 +75,7 @@ public class DatabaseManagerTest {
                 .findFirst()
                 .orElse(null);
         assertNotNull(retrievedLivre, "The book should be retrieved successfully.");
-        assertEquals("TestTitre", retrievedLivre.getTitre(), "The title of the retrieved book should match.");
+        assertEquals("Pavel", retrievedLivre.getTitre(), "The title of the retrieved book should match.");
         assertEquals("TestNom", retrievedLivre.getAuteur().getNom(),
                 "The author name of the retrieved book should match.");
         assertEquals("TestPrenom", retrievedLivre.getAuteur().getPrenom(),
