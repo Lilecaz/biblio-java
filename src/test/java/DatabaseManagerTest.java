@@ -67,6 +67,7 @@ public class DatabaseManagerTest {
         boolean isLivreAdded = this.dbManager.ajouterLivre(livre);
         assertTrue(isLivreAdded, "Book should be added successfully.");
 
+        System.err.println("ss");
         List<Livre> livres = dbManager.getLivres();
         assertFalse(livres.isEmpty(), "The list of books should not be empty.");
         Livre retrievedLivre = livres.stream()
