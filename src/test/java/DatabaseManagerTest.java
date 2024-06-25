@@ -2,50 +2,48 @@ import org.example.biblio_projet_java.DatabaseManager;
 import org.example.biblio_projet_java.Bibliotheque.Livre;
 import org.example.biblio_projet_java.Bibliotheque.Livre.Auteur;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class DatabaseManagerTest {
 
-    @Mock
     private DatabaseManager dbManager;
 
-    @BeforeEach
-    public void setUp() {
-        // Initialisation des mocks
-        MockitoAnnotations.openMocks(this);
+    // @BeforeAll
+    // public void setup() throws SQLException {
+    // dbManager = new DatabaseManager();
+    // }
+
+    @AfterAll
+    public void tearDown() throws SQLException {
+        if (dbManager != null) {
+            dbManager.close();
+        }
     }
 
     @Test
     public void testRegisterUser() throws SQLException {
-        doReturn(true).when(dbManager).registerUser("testUser", "testPassword");
+        dbManager = new DatabaseManager();
+        System.out.println(dbManager);
         boolean isRegistered = dbManager.registerUser("testUser", "testPassword");
         assertTrue(isRegistered, "User should be registered successfully.");
     }
 
     @Test
     public void testLoginUser() throws SQLException {
-        doReturn(true).when(dbManager).loginUser("test1", "test");
-        boolean isLoggedIn = dbManager.loginUser("test1", "test");
+        boolean isLoggedIn = this.dbManager.loginUser("test1", "test");
         assertTrue(isLoggedIn, "User should be able to log in successfully.");
         dbManager.logout();
     }
 
     @Test
     public void testAddAuthorAndRetrieveId() throws SQLException {
-        doReturn(1).when(dbManager).ajouterAuteur("john", "alex");
-        int authorId = dbManager.ajouterAuteur("john", "alex");
+        int authorId = this.dbManager.ajouterAuteur("john", "alex");
         assertTrue(authorId > 0, "Author should be added successfully and a valid ID should be returned.");
     }
 
@@ -66,18 +64,12 @@ public class DatabaseManagerTest {
         livre.setResume("TestResume");
         livre.setLien("TestLien");
 
-        doReturn(true).when(dbManager).ajouterLivre(livre);
-
-        List<Livre> livres = new ArrayList<>();
-        livres.add(livre);
-        when(dbManager.getLivres()).thenReturn(livres);
-
-        boolean isLivreAdded = dbManager.ajouterLivre(livre);
+        boolean isLivreAdded = this.dbManager.ajouterLivre(livre);
         assertTrue(isLivreAdded, "Book should be added successfully.");
 
-        List<Livre> retrievedLivres = dbManager.getLivres();
-        assertFalse(retrievedLivres.isEmpty(), "The list of books should not be empty.");
-        Livre retrievedLivre = retrievedLivres.stream()
+        List<Livre> livres = dbManager.getLivres();
+        assertFalse(livres.isEmpty(), "The list of books should not be empty.");
+        Livre retrievedLivre = livres.stream()
                 .filter(l -> "TestTitre".equals(l.getTitre()))
                 .findFirst()
                 .orElse(null);
