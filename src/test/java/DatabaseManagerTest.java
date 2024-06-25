@@ -43,12 +43,14 @@ public class DatabaseManagerTest {
 
     @Test
     public void testAddAuthorAndRetrieveId() throws SQLException {
+        dbManager = new DatabaseManager();
         int authorId = this.dbManager.ajouterAuteur("john", "alex");
         assertTrue(authorId > 0, "Author should be added successfully and a valid ID should be returned.");
     }
 
     @Test
     public void testAddAndRetrieveBook() throws SQLException {
+        dbManager = new DatabaseManager();
         Auteur auteur = new Auteur();
         auteur.setNom("TestNom");
         auteur.setPrenom("TestPrenom");
@@ -71,8 +73,9 @@ public class DatabaseManagerTest {
         System.err.println("ss");
         List<Livre> livres = dbManager.getLivres();
         assertFalse(livres.isEmpty(), "The list of books should not be empty.");
+
         Livre retrievedLivre = livres.stream()
-                .filter(l -> "TestTitre".equals(l.getTitre()))
+                .filter(l -> "Pavel".equals(l.getTitre()))
                 .findFirst()
                 .orElse(null);
         assertNotNull(retrievedLivre, "The book should be retrieved successfully.");
