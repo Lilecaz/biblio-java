@@ -15,6 +15,10 @@ import org.example.biblio_projet_java.DatabaseManager;
 import org.example.biblio_projet_java.Bibliotheque.Livre;
 import org.example.biblio_projet_java.Bibliotheque.Livre.Auteur;
 
+/**
+ * Cette classe représente un formulaire pour ajouter un livre.
+ */
+
 public class FormulaireLivre extends VBox {
 
     public static final TextField titreField = new TextField();

@@ -17,6 +17,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Cette classe permet de gérer la lecture et l'écriture de fichiers XML
+ * contenant les données d'une bibliothèque.
+ */
 public class XMLFileManager {
 
     /**

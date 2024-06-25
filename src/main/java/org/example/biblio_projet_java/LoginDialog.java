@@ -8,6 +8,11 @@ import javafx.util.Pair;
 import java.sql.SQLException;
 import java.util.Optional;
 
+/**
+ * Cette classe représente une boîte de dialogue de connexion.
+ * Elle permet à l'utilisateur de se connecter à la base de données en utilisant
+ * un objet DatabaseManager.
+ */
 public class LoginDialog {
     private DatabaseManager databaseManager;
 

@@ -23,6 +23,9 @@ import javafx.stage.Stage;
 
 import org.apache.poi.xwpf.usermodel.*;
 
+/**
+ * Cette classe permet d'exporter une liste de livres dans un document Word.
+ */
 public class WordExporter {
 
     private XWPFDocument document;

@@ -9,6 +9,10 @@ import javafx.geometry.Insets;
 import java.sql.SQLException;
 import java.util.Optional;
 
+/**
+ * Cette classe représente une boîte de dialogue pour l'inscription et la
+ * connexion d'un utilisateur.
+ */
 public class UserDialog {
 
     /**
