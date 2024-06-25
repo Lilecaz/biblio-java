@@ -53,6 +53,7 @@ public class DatabaseManagerTest {
         auteur.setNom("TestNom");
         auteur.setPrenom("TestPrenom");
 
+        System.out.println("ss");
         Livre livre = new Livre();
         livre.setTitre("Pavel");
         livre.setAuteur(auteur);
