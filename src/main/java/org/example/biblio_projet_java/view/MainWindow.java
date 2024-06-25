@@ -14,10 +14,9 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Optional;
 
-import org.example.biblio_projet_java.DatabaseManager;
-import org.example.biblio_projet_java.UserDialog;
-import org.example.biblio_projet_java.WordExporter;
-import org.example.biblio_projet_java.XMLFileManager;
+import org.example.biblio_projet_java.controller.DatabaseManager;
+import org.example.biblio_projet_java.utils.WordExporter;
+import org.example.biblio_projet_java.utils.XMLFileManager;
 
 /**
  * La classe MainWindow représente la fenêtre principale de l'application.

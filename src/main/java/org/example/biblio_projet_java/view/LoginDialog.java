@@ -1,4 +1,4 @@
-package org.example.biblio_projet_java;
+package org.example.biblio_projet_java.view;
 
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
@@ -7,6 +7,10 @@ import javafx.util.Pair;
 
 import java.sql.SQLException;
 import java.util.Optional;
+
+import org.example.biblio_projet_java.controller.DatabaseManager;
+import org.example.biblio_projet_java.controller.UserController;
+import org.example.biblio_projet_java.utils.AlertUtils;
 
 /**
  * Cette classe représente une boîte de dialogue de connexion.
@@ -26,7 +30,7 @@ public class LoginDialog {
     }
 
     /**
-     * Affiche la boîte de dialogue de connexion.
+     * Affiche une boîte de dialogue de connexion.
      * 
      * @param primaryStage la fenêtre principale de l'application
      */
@@ -49,36 +53,18 @@ public class LoginDialog {
         grid.add(new Label("Password:"), 0, 1);
         grid.add(password, 1, 1);
 
-        dialog.getDialogPane().setContent(grid);
-        dialog.setResultConverter(dialogButton -> {
-            if (dialogButton == loginButtonType) {
-                return new Pair<>(username.getText(), password.getText());
-            }
-            return null;
-        });
+        UserController.configureDialog(dialog, loginButtonType, grid, username, password);
 
         Optional<Pair<String, String>> result = dialog.showAndWait();
         result.ifPresent(credentials -> handleLogin(credentials, primaryStage));
     }
 
     /**
-     * Gère la tentative de connexion de l'utilisateur avec les informations
-     * d'identification fournies.
-     * 
-     * @param credentials  les informations d'identification de l'utilisateur (nom
-     *                     d'utilisateur et mot de passe)
-     * @param primaryStage la fenêtre principale de l'application
+     * @param credentials
+     * @param primaryStage
      */
     private void handleLogin(Pair<String, String> credentials, Stage primaryStage) {
-        try {
-            if (databaseManager.loginUser(credentials.getKey(), credentials.getValue())) {
-                AlertUtils.showInformation("Connexion réussie", "Vous êtes maintenant connecté.");
-                databaseManager.setUserLoggedIn(true);
-            } else {
-                AlertUtils.showError("Échec de la connexion", "Username ou mot de passe incorrect.");
-            }
-        } catch (SQLException e) {
-            AlertUtils.showError("Erreur de connexion", "Une erreur s'est produite lors de la connexion.");
-        }
+        UserController.loginHandler(credentials);
     }
+
 }

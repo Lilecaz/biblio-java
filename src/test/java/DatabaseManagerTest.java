@@ -1,6 +1,6 @@
-import org.example.biblio_projet_java.DatabaseManager;
 import org.example.biblio_projet_java.Bibliotheque.Livre;
 import org.example.biblio_projet_java.Bibliotheque.Livre.Auteur;
+import org.example.biblio_projet_java.controller.DatabaseManager;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.Test;
 

@@ -1,9 +1,9 @@
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.example.biblio_projet_java.Bibliotheque.Livre;
+import org.example.biblio_projet_java.controller.DatabaseManager;
 import org.example.biblio_projet_java.view.FormulaireLivre;
 import org.example.biblio_projet_java.view.LivreTableView;
-import org.example.biblio_projet_java.DatabaseManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

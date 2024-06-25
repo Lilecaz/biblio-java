@@ -1,4 +1,4 @@
-package org.example.biblio_projet_java;
+package org.example.biblio_projet_java.view;
 
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
@@ -9,11 +9,17 @@ import javafx.geometry.Insets;
 import java.sql.SQLException;
 import java.util.Optional;
 
+import org.example.biblio_projet_java.controller.DatabaseManager;
+import org.example.biblio_projet_java.controller.UserController;
+
 /**
  * Cette classe représente une boîte de dialogue pour l'inscription et la
  * connexion d'un utilisateur.
  */
 public class UserDialog {
+
+    public UserDialog(Stage primaryStage, DatabaseManager databaseManager) {
+    }
 
     /**
      * Affiche une boîte de dialogue de connexion.
@@ -50,17 +56,7 @@ public class UserDialog {
         PasswordField confirmPassword = new PasswordField();
         addFieldsToGrid(grid, username, password, confirmPassword);
 
-        dialog.getDialogPane().setContent(grid);
-        dialog.setResultConverter(dialogButton -> {
-            if (dialogButton.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
-                if (!password.getText().equals(confirmPassword.getText())) {
-                    showAlert(Alert.AlertType.ERROR, "Erreur", "Les mots de passe ne correspondent pas.");
-                    return null;
-                }
-                return new Pair<>(username.getText(), password.getText());
-            }
-            return null;
-        });
+        UserController.configureDialog(dialog, grid, username, password, confirmPassword);
 
         processDialogResult(dialog.showAndWait(), databaseManager, true);
     }
@@ -132,39 +128,7 @@ public class UserDialog {
             boolean isSignUp) {
         if (!result.isPresent())
             return;
-
-        result.ifPresent(credentials -> {
-            String usernameText = credentials.getKey();
-            String passwordText = credentials.getValue();
-            try {
-                if ((isSignUp ? databaseManager.registerUser(usernameText, passwordText)
-                        : databaseManager.loginUser(usernameText, passwordText))) {
-                    showAlert(Alert.AlertType.INFORMATION, (isSignUp ? "Inscription réussie" : "Connexion réussie"),
-                            "Vous êtes maintenant " + (isSignUp ? "inscrit" : "connecté") + ".");
-                    databaseManager.setUserLoggedIn(true);
-                } else {
-                    showAlert(Alert.AlertType.ERROR, (isSignUp ? "Échec de l'inscription" : "Échec de la connexion"),
-                            "Nom d'utilisateur ou mot de passe incorrect.");
-                }
-            } catch (SQLException e) {
-                showAlert(Alert.AlertType.ERROR, "Erreur", "Une erreur s'est produite.");
-            }
-        });
-    }
-
-    /**
-     * Affiche une boîte de dialogue avec le type d'alerte spécifié, le titre et le
-     * message donnés.
-     *
-     * @param alertType le type d'alerte à afficher
-     * @param title     le titre de la boîte de dialogue
-     * @param message   le message à afficher dans la boîte de dialogue
-     */
-    private static void showAlert(Alert.AlertType alertType, String title, String message) {
-        Alert alert = new Alert(alertType);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+        UserController controller = new UserController(databaseManager);
+        controller.Loger(result, databaseManager, isSignUp);
     }
 }
