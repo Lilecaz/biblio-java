@@ -65,7 +65,7 @@ public class MainWindow extends Application {
 
         btnConnect.setOnAction(event -> {
             showLoginDialog(primaryStage);
-            if (databaseManager.isConnected()) {
+            if (databaseManager.isUserConnected()) {
                 showMainWindow(primaryStage, null);
             } else {
                 showAlert(Alert.AlertType.INFORMATION, "Information", "Connexion échouée.");
@@ -74,7 +74,7 @@ public class MainWindow extends Application {
 
         btnSignUp.setOnAction(event -> {
             showSignUpDialog(primaryStage);
-            if (databaseManager.isConnected()) {
+            if (databaseManager.isUserConnected()) {
 
             }
             showMainWindow(primaryStage, null);
@@ -125,7 +125,8 @@ public class MainWindow extends Application {
         VBox tableViewBox = new VBox(tableView);
 
         root.setCenter(tableViewBox);
-        if (databaseManager.isConnected() && databaseManager.isAdmin()) {
+        System.out.println(databaseManager.isUserConnected() + " " + databaseManager.isAdmin());
+        if (databaseManager.isUserConnected() && databaseManager.isAdmin() || !databaseManager.isUserConnected()) {
             root.setRight(formulaireLivreBox);
         }
 
@@ -163,7 +164,17 @@ public class MainWindow extends Application {
         menuItem4.setOnAction(event -> saveFileAs(primaryStage));
 
         MenuItem decoMenuItem = new MenuItem("Se déconnecter");
-        decoMenuItem.setOnAction(event -> logout(primaryStage));
+        decoMenuItem.setOnAction(event -> {
+            try {
+                logout(primaryStage);
+            } catch (SQLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        });
+
+        MenuItem connectMenuItem = new MenuItem("Se connecter");
+        connectMenuItem.setOnAction(event -> showLoginDialog(primaryStage));
 
         MenuItem menuItem5 = new MenuItem("Infos");
 
@@ -176,8 +187,12 @@ public class MainWindow extends Application {
         Menu menu3 = new Menu("About");
         menu3.getItems().addAll(menuItem5);
 
-        Menu menuUser = new Menu(databaseManager.isConnected() ? databaseManager.getUsername() : "Utilisateur");
-        menuUser.getItems().addAll(decoMenuItem);
+        Menu menuUser = new Menu(databaseManager.isUserConnected() ? databaseManager.getUsername() : "Se connecter");
+        if (databaseManager.isUserConnected()) {
+            menuUser.getItems().add(decoMenuItem);
+        } else {
+            menuUser.getItems().add(connectMenuItem);
+        }
 
         MenuBar menuBar = new MenuBar();
         menuBar.getMenus().addAll(menu, menu2, menu3, menuUser);
@@ -248,19 +263,17 @@ public class MainWindow extends Application {
      * de données.
      *
      * @param primaryStage la fenêtre principale de l'application
+     * @throws SQLException
      */
-    private void logout(Stage primaryStage) {
+    private void logout(Stage primaryStage) throws SQLException {
         databaseManager.logout();
         // VBox startBox = createStartBox(primaryStage);
         // Scene startScene = new Scene(startBox);
         // primaryStage.setScene(startScene);
         primaryStage.close();
-        showLoginDialog(primaryStage);
-        if (databaseManager.isConnected()) {
+        start(primaryStage);
+        if (databaseManager.isUserConnected()) {
             showMainWindow(primaryStage, null);
-        } else {
-            showAlert(Alert.AlertType.INFORMATION, "Information", "Connexion échouée.");
-
         }
     }
 
@@ -270,7 +283,13 @@ public class MainWindow extends Application {
      * @param primaryStage la fenêtre principale de l'application
      */
     public void showLoginDialog(Stage primaryStage) {
+        primaryStage.close();
         UserDialog.showLoginDialog(primaryStage, databaseManager);
+        if (databaseManager.isUserConnected()) {
+            showMainWindow(primaryStage, null);
+        } else {
+            showAlert(Alert.AlertType.INFORMATION, "Information", "Connexion échouée.");
+        }
     }
 
     /**

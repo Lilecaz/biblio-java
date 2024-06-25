@@ -332,12 +332,8 @@ public class DatabaseManager {
         isUserLoggedIn = userLoggedIn;
     }
 
-    public boolean isConnected() {
-        try {
-            return connection != null && !connection.isClosed();
-        } catch (SQLException e) {
-            return false;
-        }
+    public boolean isUserConnected() {
+        return username != null;
     }
 
     public boolean isAdmin() {
