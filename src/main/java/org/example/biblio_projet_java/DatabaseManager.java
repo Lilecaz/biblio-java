@@ -16,6 +16,8 @@ import java.util.Properties;
 
 import org.example.biblio_projet_java.Bibliotheque.Livre;
 
+import javafx.collections.ObservableList;
+
 /**
  * Cette classe gère la connexion à la base de données et les opérations liées à
  * celle-ci.
@@ -61,7 +63,6 @@ public class DatabaseManager {
      * @throws SQLException si une erreur d'accès à la base de données se produit
      */
     private void connect() throws SQLException {
-        System.out.println("URL: " + URL);
         if (connection == null || connection.isClosed()) {
             try {
 
@@ -338,6 +339,11 @@ public class DatabaseManager {
 
     public boolean isAdmin() {
         return "admin".equals(usertype);
+    }
+
+    public void syncData(ObservableList<Livre> items) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'syncData'");
     }
 
 }
