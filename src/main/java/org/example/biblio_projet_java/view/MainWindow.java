@@ -1,3 +1,4 @@
+
 package org.example.biblio_projet_java.view;
 
 import javafx.application.Application;
@@ -18,12 +19,29 @@ import org.example.biblio_projet_java.UserDialog;
 import org.example.biblio_projet_java.WordExporter;
 import org.example.biblio_projet_java.XMLFileManager;
 
+/**
+ * La classe MainWindow représente la fenêtre principale de l'application.
+ * Elle étend la classe Application de la bibliothèque JavaFX.
+ * Cette classe est responsable de la création et de la gestion de l'interface
+ * utilisateur de l'application.
+ * Elle fournit des méthodes pour gérer les actions de l'utilisateur, telles que
+ * la connexion à la base de données,
+ * l'ouverture et l'enregistrement de fichiers, l'exportation de données et la
+ * gestion des sessions utilisateur.
+ */
 public class MainWindow extends Application {
 
     private File currentFile;
     private DatabaseManager databaseManager;
     private LivreTableView tableView;
 
+    /**
+     * Démarre l'application en créant une nouvelle fenêtre principale.
+     * 
+     * @param primaryStage la fenêtre principale de l'application
+     * @throws SQLException si une erreur se produit lors de la connexion à la base
+     *                      de données
+     */
     @Override
     public void start(Stage primaryStage) throws SQLException {
         databaseManager = new DatabaseManager();
@@ -36,6 +54,13 @@ public class MainWindow extends Application {
         primaryStage.show();
     }
 
+    /**
+     * Crée une boîte de démarrage contenant des boutons pour se connecter,
+     * s'inscrire et ouvrir un fichier.
+     * 
+     * @param primaryStage la fenêtre principale de l'application
+     * @return la boîte de démarrage créée
+     */
     private VBox createStartBox(Stage primaryStage) {
         VBox startBox = new VBox(10);
         startBox.setPrefSize(300, 200);
@@ -72,16 +97,29 @@ public class MainWindow extends Application {
         return startBox;
     }
 
+    /**
+     * Ouvre une boîte de dialogue pour sélectionner un fichier XML, puis affiche la
+     * fenêtre principale avec le fichier sélectionné.
+     * 
+     * @param primaryStage la fenêtre principale de l'application
+     */
     private void openFile(Stage primaryStage) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Ouvrir un fichier XML");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichiers XML", "*.xml"));
         File selectedFile = fileChooser.showOpenDialog(primaryStage);
         if (selectedFile != null) {
-            showMainWindow(primaryStage, selectedFile, databaseManager.isAdmin());
+            showMainWindow(primaryStage, selectedFile, true);
         }
     }
 
+    /**
+     * Affiche la fenêtre principale de l'application.
+     * 
+     * @param primaryStage La fenêtre principale de l'application.
+     * @param fileToLoad   Le fichier à charger (peut être null).
+     * @param isAdmin      Indique si l'utilisateur est un administrateur.
+     */
     private void showMainWindow(Stage primaryStage, File fileToLoad, boolean isAdmin) {
         tableView = new LivreTableView();
         FormulaireLivre formulaireLivre = new FormulaireLivre(tableView, databaseManager);
@@ -111,6 +149,12 @@ public class MainWindow extends Application {
         primaryStage.show();
     }
 
+    /**
+     * Crée et retourne une barre de menu pour la fenêtre principale.
+     *
+     * @param primaryStage la fenêtre principale de l'application
+     * @return la barre de menu créée
+     */
     private MenuBar createMenuBar(Stage primaryStage) {
         MenuItem menuItem1 = new MenuItem("Ouvrir");
         menuItem1.setOnAction(event -> openFile(primaryStage));
@@ -148,11 +192,11 @@ public class MainWindow extends Application {
         syncMenuItem.setOnAction(event -> syncData(primaryStage));
 
         Menu menu = new Menu("Fichier");
-        if (databaseManager.isUserConnected() && databaseManager.isAdmin()) {
-            menu.getItems().addAll(menuItem1, menuItem2, menuItem6, syncMenuItem);
-        } else {
-            menu.getItems().addAll(menuItem1, menuItem2, menuItem6);
-        }
+        // if (databaseManager.isUserConnected() && databaseManager.isAdmin()) {
+        menu.getItems().addAll(menuItem1, menuItem2, menuItem6, syncMenuItem);
+        // } else {
+        // menu.getItems().addAll(menuItem1, menuItem2, menuItem6);
+        // }
 
         Menu menu2 = new Menu("Edition");
         menu2.getItems().addAll(menuItem3, menuItem4);
@@ -173,6 +217,10 @@ public class MainWindow extends Application {
         return menuBar;
     }
 
+    /**
+     * Sauvegarde le fichier XML actuellement ouvert.
+     * Si aucun fichier n'est actuellement ouvert, affiche une alerte d'information.
+     */
     private void saveFile() {
         if (currentFile != null) {
             XMLFileManager.sauvegarderFichierXML(currentFile, tableView.getItems());
@@ -181,6 +229,11 @@ public class MainWindow extends Application {
         }
     }
 
+    /**
+     * Sauvegarde le fichier XML en tant que nouveau fichier.
+     * 
+     * @param primaryStage la fenêtre principale de l'application
+     */
     private void saveFileAs(Stage primaryStage) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Sauvegarder un fichier XML");
@@ -191,6 +244,11 @@ public class MainWindow extends Application {
         }
     }
 
+    /**
+     * Exporte les données de la table dans un document Word.
+     * 
+     * @param primaryStage la fenêtre principale de l'application
+     */
     private void exportDocument(Stage primaryStage) {
         if (!tableView.getItems().isEmpty()) {
             TextInputDialog dialog = new TextInputDialog();
@@ -215,6 +273,16 @@ public class MainWindow extends Application {
         }
     }
 
+    /**
+     * Déconnecte l'utilisateur actuellement connecté, ferme la fenêtre principale
+     * et redémarre l'application.
+     * Si l'utilisateur est toujours connecté après la déconnexion, affiche la
+     * fenêtre principale avec les autorisations appropriées.
+     *
+     * @param primaryStage La fenêtre principale de l'application.
+     * @throws SQLException Si une erreur se produit lors de la déconnexion de la
+     *                      base de données.
+     */
     private void logout(Stage primaryStage) throws SQLException {
         databaseManager.logout();
         primaryStage.close();
@@ -224,6 +292,15 @@ public class MainWindow extends Application {
         }
     }
 
+    /**
+     * Affiche la boîte de dialogue de connexion.
+     * Ferme la fenêtre principale.
+     * Si l'utilisateur est connecté, affiche la fenêtre principale avec les
+     * autorisations appropriées.
+     * Sinon, affiche une alerte d'information indiquant que la connexion a échoué.
+     *
+     * @param primaryStage la fenêtre principale de l'application
+     */
     public void showLoginDialog(Stage primaryStage) {
         primaryStage.close();
         UserDialog.showLoginDialog(primaryStage, databaseManager);
@@ -234,10 +311,23 @@ public class MainWindow extends Application {
         }
     }
 
+    /**
+     * Affiche la boîte de dialogue d'inscription.
+     * 
+     * @param primaryStage la fenêtre principale de l'application
+     */
     public void showSignUpDialog(Stage primaryStage) {
         UserDialog.showSignUpDialog(primaryStage, databaseManager);
     }
 
+    /**
+     * Affiche une boîte de dialogue d'alerte avec le type d'alerte spécifié, le
+     * titre et le message donnés.
+     *
+     * @param alertType le type d'alerte à afficher (Alert.AlertType)
+     * @param title     le titre de l'alerte
+     * @param message   le message de l'alerte
+     */
     private void showAlert(Alert.AlertType alertType, String title, String message) {
         Alert alert = new Alert(alertType);
         alert.setTitle(title);
@@ -246,6 +336,13 @@ public class MainWindow extends Application {
         alert.showAndWait();
     }
 
+    /**
+     * Démarre l'application en créant une nouvelle fenêtre principale.
+     * 
+     * @param primaryStage la fenêtre principale de l'application
+     * @throws SQLException si une erreur se produit lors de la connexion à la base
+     *                      de données
+     */
     private void syncData(Stage primaryStage) {
         // Implement your synchronization logic here
         Alert syncChoiceAlert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -261,14 +358,46 @@ public class MainWindow extends Application {
 
         Optional<ButtonType> result = syncChoiceAlert.showAndWait();
         if (result.get() == buttonTypeOne) {
-            System.out.println("Envoi des données locales au serveur");
-            // databaseManager.syncData(tableView.getItems());
-            showAlert(Alert.AlertType.INFORMATION, "Synchronisation", "Données envoyées avec succès.");
+            try {
+                boolean rep = databaseManager.syncData(tableView.getItems(), databaseManager.isAdmin());
+                if (rep) {
+                    showAlert(Alert.AlertType.INFORMATION, "Synchronisation", "Données envoyées avec succès.");
+                } else {
+                    if (databaseManager.isUserConnected()) {
+                        if (!databaseManager.isAdmin()) {
+                            showAlert(Alert.AlertType.ERROR, "Erreur",
+                                    "Vous n'avez pas les autorisations nécessaires pour effectuer cette action.");
+                        } else {
+                            showAlert(Alert.AlertType.ERROR, "Erreur",
+                                    "Erreur lors de l'envoi des données : " + "Vous n'êtes pas connecté.");
+                            primaryStage.close();
+                            showLoginDialog(primaryStage);
+                        }
+                    } else {
+                        showAlert(Alert.AlertType.ERROR, "Erreur",
+                                "Vous devez être connecté pour effectuer cette action.");
+                        primaryStage.close();
+                        start(primaryStage);
+                    }
+                }
+            } catch (SQLException e) {
+                showAlert(Alert.AlertType.ERROR, "Erreur",
+                        "Erreur lors de la synchronisation des données : " + e.getMessage());
+            }
         } else if (result.get() == buttonTypeTwo) {
-            System.out.println("Récupération des données du serveur");
-            // tableView.getItems().clear();
-            // tableView.getItems().addAll(databaseManager.retrieveData());
-            showAlert(Alert.AlertType.INFORMATION, "Synchronisation", "Données récupérées avec succès.");
+            try {
+                boolean rep = databaseManager.syncData(tableView.getItems(), databaseManager.isAdmin());
+                if (rep) {
+                    showAlert(Alert.AlertType.INFORMATION, "Synchronisation", "Données récupérées avec succès.");
+                } else {
+                    showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors de la récupération des données.");
+                    primaryStage.close();
+                    showLoginDialog(primaryStage);
+                }
+            } catch (SQLException e) {
+                showAlert(Alert.AlertType.ERROR, "Erreur",
+                        "Erreur lors de la synchronisation des données : " + e.getMessage());
+            }
         }
     }
 

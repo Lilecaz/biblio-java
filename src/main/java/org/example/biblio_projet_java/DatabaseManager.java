@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import org.example.biblio_projet_java.AlertUtils;
 
 import org.example.biblio_projet_java.Bibliotheque.Livre;
 
@@ -33,7 +34,7 @@ public class DatabaseManager {
             Properties prop = new Properties();
 
             if (input == null) {
-                System.out.println("Sorry, unable to find config.properties");
+                AlertUtils.showError("Erreur", "Fichier de configuration introuvable.");
             } else {
                 // load a properties file from class path
                 prop.load(input);
@@ -341,9 +342,38 @@ public class DatabaseManager {
         return "admin".equals(usertype);
     }
 
-    public void syncData(ObservableList<Livre> items) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'syncData'");
+    public boolean syncData(ObservableList<Livre> items, boolean isUserAdmin) throws SQLException {
+        List<Livre> livresInDatabase = new ArrayList<>();
+        List<Livre> newLivres = new ArrayList<>();
+        if (isUserAdmin) {
+            try {
+                livresInDatabase = getLivres();
+            } catch (SQLException e) {
+                AlertUtils.showError("Erreur", "Impossible de récupérer les livres de la base de données.");
+            }
+
+            for (Livre livre : items) {
+                boolean found = false;
+                for (Livre livre2 : livresInDatabase) {
+                    if (livre.getTitre().equals(livre2.getTitre())
+                            && livre.getAuteur().getNom().equals(livre2.getAuteur().getNom())
+                            && livre.getAuteur().getPrenom().equals(livre2.getAuteur().getPrenom())) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    newLivres.add(livre);
+                    System.out.println("Nouveau livre: " + livre.getTitre());
+                }
+            }
+            for (Livre livre : newLivres) {
+                ajouterLivre(livre);
+            }
+        } else {
+            return false;
+        }
+        return true;
     }
 
 }
