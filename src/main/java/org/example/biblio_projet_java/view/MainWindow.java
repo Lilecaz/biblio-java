@@ -65,11 +65,18 @@ public class MainWindow extends Application {
 
         btnConnect.setOnAction(event -> {
             showLoginDialog(primaryStage);
-            showMainWindow(primaryStage, null);
+            if (databaseManager.isConnected()) {
+                showMainWindow(primaryStage, null);
+            } else {
+                showAlert(Alert.AlertType.INFORMATION, "Information", "Connexion échouée.");
+            }
         });
 
         btnSignUp.setOnAction(event -> {
             showSignUpDialog(primaryStage);
+            if (databaseManager.isConnected()) {
+
+            }
             showMainWindow(primaryStage, null);
         });
 
@@ -118,7 +125,7 @@ public class MainWindow extends Application {
         VBox tableViewBox = new VBox(tableView);
 
         root.setCenter(tableViewBox);
-        if (databaseManager.getUserType().equals("admin")) {
+        if (databaseManager.isConnected() && databaseManager.isAdmin()) {
             root.setRight(formulaireLivreBox);
         }
 
@@ -169,7 +176,7 @@ public class MainWindow extends Application {
         Menu menu3 = new Menu("About");
         menu3.getItems().addAll(menuItem5);
 
-        Menu menuUser = new Menu("Utilisateur");
+        Menu menuUser = new Menu(databaseManager.isConnected() ? databaseManager.getUsername() : "Utilisateur");
         menuUser.getItems().addAll(decoMenuItem);
 
         MenuBar menuBar = new MenuBar();
@@ -244,8 +251,17 @@ public class MainWindow extends Application {
      */
     private void logout(Stage primaryStage) {
         databaseManager.logout();
-        primaryStage.setScene(new Scene(new VBox(10)));
-        databaseManager.setUserLoggedIn(false);
+        // VBox startBox = createStartBox(primaryStage);
+        // Scene startScene = new Scene(startBox);
+        // primaryStage.setScene(startScene);
+        primaryStage.close();
+        showLoginDialog(primaryStage);
+        if (databaseManager.isConnected()) {
+            showMainWindow(primaryStage, null);
+        } else {
+            showAlert(Alert.AlertType.INFORMATION, "Information", "Connexion échouée.");
+
+        }
     }
 
     /**

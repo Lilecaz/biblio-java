@@ -17,7 +17,8 @@ import java.util.Properties;
 import org.example.biblio_projet_java.Bibliotheque.Livre;
 
 /**
- * Cette classe gère la connexion à la base de données et les opérations liées à celle-ci.
+ * Cette classe gère la connexion à la base de données et les opérations liées à
+ * celle-ci.
  */
 public class DatabaseManager {
 
@@ -329,6 +330,18 @@ public class DatabaseManager {
 
     public void setUserLoggedIn(boolean userLoggedIn) {
         isUserLoggedIn = userLoggedIn;
+    }
+
+    public boolean isConnected() {
+        try {
+            return connection != null && !connection.isClosed();
+        } catch (SQLException e) {
+            return false;
+        }
+    }
+
+    public boolean isAdmin() {
+        return "admin".equals(usertype);
     }
 
 }
