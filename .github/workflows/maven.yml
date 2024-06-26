@@ -41,7 +41,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: jar
-          path: target/biblio-java-1.0-SNAPSHOT.jar
+          path: target/KBYBiblio-1.0-SNAPSHOT.jar
       
       - name: Generate SBOM
         run: mvn cyclonedx:makeAggregateBom
