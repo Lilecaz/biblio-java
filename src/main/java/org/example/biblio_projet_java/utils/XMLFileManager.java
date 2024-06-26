@@ -83,7 +83,10 @@ public class XMLFileManager {
                     return false;
                 }
             } else {
-                file.createNewFile();
+                boolean fileCreated = file.createNewFile();
+                if (!fileCreated) {
+                    throw new IOException("Le fichier n'a pas pu être créé.");
+                }
                 marshaller.marshal(bibliotheque, file);
                 return true;
             }
