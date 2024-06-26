@@ -10,9 +10,11 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import org.example.biblio_projet_java.Bibliotheque.Livre;
 import org.example.biblio_projet_java.utils.AlertUtils;
@@ -221,7 +223,7 @@ public class DatabaseManager {
      */
     public int ajouterAuteur(String nom, String prenom) throws SQLException {
         String query = "INSERT INTO auteurs (nom, prenom) VALUES (?, ?)";
-        try (PreparedStatement stmt = connection.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement stmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, nom);
             stmt.setString(2, prenom);
             stmt.executeUpdate();
@@ -343,48 +345,54 @@ public class DatabaseManager {
     }
 
     /**
- * Synchronise les données des livres entre une liste observable d'items et la base de données.
- * Cette méthode vérifie si l'utilisateur est administrateur avant de procéder à la synchronisation.
- * Si l'utilisateur est administrateur, elle compare les livres dans la liste fournie avec ceux
- * déjà présents dans la base de données. Les nouveaux livres trouvés sont ajoutés à la base de données.
- * 
- * @param items La liste observable d'objets de type {@link Livre} contenant les livres à synchroniser.
- * @param isUserAdmin Un booléen indiquant si l'utilisateur est administrateur ou non.
- * @return Retourne true si la synchronisation a réussi (utilisateur administrateur), sinon false.
- * @throws SQLException Lancée en cas d'erreur lors de l'accès à la base de données.
- */
+     * Synchronise les données des livres entre une liste observable d'items et la
+     * base de données.
+     * Cette méthode vérifie si l'utilisateur est administrateur avant de procéder à
+     * la synchronisation.
+     * Si l'utilisateur est administrateur, elle compare les livres dans la liste
+     * fournie avec ceux
+     * déjà présents dans la base de données. Les nouveaux livres trouvés sont
+     * ajoutés à la base de données.
+     * 
+     * @param items       La liste observable d'objets de type {@link Livre}
+     *                    contenant les livres à synchroniser.
+     * @param isUserAdmin Un booléen indiquant si l'utilisateur est administrateur
+     *                    ou non.
+     * @return Retourne true si la synchronisation a réussi (utilisateur
+     *         administrateur), sinon false.
+     * @throws SQLException Lancée en cas d'erreur lors de l'accès à la base de
+     *                      données.
+     */
     public boolean syncData(ObservableList<Livre> items, boolean isUserAdmin) throws SQLException {
-        List<Livre> livresInDatabase = new ArrayList<>();
-        List<Livre> newLivres = new ArrayList<>();
-        if (isUserAdmin) {
-            try {
-                livresInDatabase = getLivres();
-            } catch (SQLException e) {
-                AlertUtils.showError("Erreur", "Impossible de récupérer les livres de la base de données.");
-            }
-
-            for (Livre livre : items) {
-                boolean found = false;
-                for (Livre livre2 : livresInDatabase) {
-                    if (livre.getTitre().equals(livre2.getTitre())
-                            && livre.getAuteur().getNom().equals(livre2.getAuteur().getNom())
-                            && livre.getAuteur().getPrenom().equals(livre2.getAuteur().getPrenom())) {
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found) {
-                    newLivres.add(livre);
-                    System.out.println("Nouveau livre: " + livre.getTitre());
-                }
-            }
-            for (Livre livre : newLivres) {
-                ajouterLivre(livre);
-            }
-        } else {
+        if (!isUserAdmin) {
             return false;
         }
+
+        try {
+            List<Livre> livresInDatabase = getLivres();
+            List<Livre> newLivres = filterNewLivres(items, livresInDatabase);
+
+            for (Livre livre : newLivres) {
+                ajouterLivre(livre);
+                System.out.println("Nouveau livre: " + livre.getTitre());
+            }
+        } catch (SQLException e) {
+            AlertUtils.showError("Erreur", "Impossible de récupérer les livres de la base de données.");
+        }
+
         return true;
+    }
+
+    private List<Livre> filterNewLivres(ObservableList<Livre> items, List<Livre> livresInDatabase) {
+        return items.stream()
+                .filter(item -> livresInDatabase.stream().noneMatch(dbItem -> isSameLivre(item, dbItem)))
+                .collect(Collectors.toList());
+    }
+
+    private boolean isSameLivre(Livre livre1, Livre livre2) {
+        return livre1.getTitre().equals(livre2.getTitre())
+                && livre1.getAuteur().getNom().equals(livre2.getAuteur().getNom())
+                && livre1.getAuteur().getPrenom().equals(livre2.getAuteur().getPrenom());
     }
 
 }
