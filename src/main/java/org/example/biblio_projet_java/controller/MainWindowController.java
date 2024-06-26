@@ -23,6 +23,7 @@ import javafx.stage.Stage;
  */
 public class MainWindowController {
     public MainWindowController() {
+        // Constructeur par défaut
     }
 
     /**
@@ -35,78 +36,93 @@ public class MainWindowController {
      * @return
      */
     public boolean syncData(Stage primaryStage, DatabaseManager databaseManager, LivreTableView tableView) {
-        Alert syncChoiceAlert = new Alert(Alert.AlertType.CONFIRMATION);
-        syncChoiceAlert.setTitle("Synchronisation");
-        syncChoiceAlert.setHeaderText("Voulez-vous envoyer les données locales au serveur ?");
-        syncChoiceAlert.setContentText("Choisissez votre option.");
+        Optional<ButtonType> result = showSyncChoiceAlert();
+        if (!result.isPresent())
+            return false;
 
-        ButtonType buttonTypeOne = new ButtonType("Envoyer les données locales");
-        ButtonType buttonTypeTwo = new ButtonType("Récupérer les données du serveur");
-        ButtonType buttonTypeCancel = new ButtonType("Annuler", ButtonBar.ButtonData.CANCEL_CLOSE);
-
-        syncChoiceAlert.getButtonTypes().setAll(buttonTypeOne, buttonTypeTwo, buttonTypeCancel);
-
-        Optional<ButtonType> result = syncChoiceAlert.showAndWait();
-        if (result.isPresent() && result.get() == buttonTypeOne) {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("XML files (*.xml)", "*.xml"));
-            File selectedFile = fileChooser.showOpenDialog(primaryStage);
-
-            if (selectedFile != null) {
-                File loadedFile = XMLFileManager.chargerFichierXML(selectedFile, tableView);
-                if (loadedFile != null) {
-                    Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
-                    confirmAlert.setTitle("Confirmation des données");
-                    confirmAlert.setHeaderText("Voulez-vous envoyer ces données au serveur ?");
-                    confirmAlert.setContentText("Confirmez pour envoyer les données au serveur.");
-
-                    ButtonType confirmButton = new ButtonType("Confirmer");
-                    ButtonType cancelButton = new ButtonType("Annuler", ButtonBar.ButtonData.CANCEL_CLOSE);
-                    confirmAlert.getButtonTypes().setAll(confirmButton, cancelButton);
-
-                    Optional<ButtonType> confirmResult = confirmAlert.showAndWait();
-                    if (confirmResult.isPresent() && confirmResult.get() == confirmButton) {
-                        try {
-                            boolean rep = databaseManager.syncData(tableView.getItems(), databaseManager.isAdmin());
-                            if (rep) {
-                                AlertUtils.showAlert(Alert.AlertType.INFORMATION, "Synchronisation",
-                                        "Données envoyées avec succès.");
-                                return true;
-                            } else {
-                                showSyncError(databaseManager);
-                                return false;
-                            }
-                        } catch (SQLException e) {
-                            AlertUtils.showAlert(Alert.AlertType.ERROR, "Erreur",
-                                    "Erreur lors de la synchronisation des données : " + e.getMessage());
-                            return false;
-                        }
-                    }
-                } else {
-                    AlertUtils.showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors du chargement du fichier XML.");
-                }
-            }
-        } else if (result.get() == buttonTypeTwo) {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Sélectionner un fichier XML");
-            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichiers XML", "*.xml"));
-            File selectedFile = fileChooser.showSaveDialog(primaryStage);
-
-            if (selectedFile != null) {
-                boolean success = XMLFileManager.sauvegarderFichierXML(selectedFile, tableView.getItems());
-                if (success) {
-                    AlertUtils.showAlert(Alert.AlertType.INFORMATION, "Synchronisation",
-                            "Données sauvegardées avec succès dans le fichier XML.");
-                    return true;
-                } else {
-                    AlertUtils.showAlert(Alert.AlertType.ERROR, "Erreur",
-                            "Erreur lors de la sauvegarde des données dans le fichier XML.");
-                }
-            }
-        } else {
-
+        if (result.get().getText().equals("Envoyer les données locales")) {
+            return handleLocalDataSend(primaryStage, databaseManager, tableView);
+        } else if (result.get().getText().equals("Récupérer les données du serveur")) {
+            return handleServerDataRetrieval(primaryStage, tableView);
         }
+
         return false;
+    }
+
+    private Optional<ButtonType> showSyncChoiceAlert() {
+        Alert syncChoiceAlert = new Alert(Alert.AlertType.CONFIRMATION, "Choisissez votre option.",
+                new ButtonType("Envoyer les données locales"),
+                new ButtonType("Récupérer les données du serveur"),
+                new ButtonType("Annuler", ButtonBar.ButtonData.CANCEL_CLOSE));
+        syncChoiceAlert.setTitle("Synchronisation");
+        syncChoiceAlert.setHeaderText(
+                "Voulez-vous envoyer les données locales au serveur ou récupérer les données du serveur ?");
+        return syncChoiceAlert.showAndWait();
+    }
+
+    private boolean handleLocalDataSend(Stage primaryStage, DatabaseManager databaseManager, LivreTableView tableView) {
+        File selectedFile = showFileChooser(primaryStage, "Envoyer les données locales", "*.xml", "XML files (*.xml)");
+        if (selectedFile == null)
+            return false;
+
+        File loadedFile = XMLFileManager.chargerFichierXML(selectedFile, tableView);
+        if (loadedFile == null) {
+            AlertUtils.showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors du chargement du fichier XML.");
+            return false;
+        }
+
+        return confirmAndSyncData(databaseManager, tableView);
+    }
+
+    private boolean handleServerDataRetrieval(Stage primaryStage, LivreTableView tableView) {
+        File selectedFile = showFileChooser(primaryStage, "Sélectionner un fichier XML", "*.xml", "Fichiers XML");
+        if (selectedFile == null)
+            return false;
+
+        boolean success = XMLFileManager.sauvegarderFichierXML(selectedFile, tableView.getItems());
+        if (!success) {
+            AlertUtils.showAlert(Alert.AlertType.ERROR, "Erreur",
+                    "Erreur lors de la sauvegarde des données dans le fichier XML.");
+            return false;
+        }
+
+        AlertUtils.showAlert(Alert.AlertType.INFORMATION, "Synchronisation",
+                "Données sauvegardées avec succès dans le fichier XML.");
+        return true;
+    }
+
+    private File showFileChooser(Stage primaryStage, String title, String extension, String description) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle(title);
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(description, extension));
+        return extension.equals("*.xml") ? fileChooser.showOpenDialog(primaryStage)
+                : fileChooser.showSaveDialog(primaryStage);
+    }
+
+    private boolean confirmAndSyncData(DatabaseManager databaseManager, LivreTableView tableView) {
+        Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION, "Confirmez pour envoyer les données au serveur.",
+                new ButtonType("Confirmer"),
+                new ButtonType("Annuler", ButtonBar.ButtonData.CANCEL_CLOSE));
+        confirmAlert.setTitle("Confirmation des données");
+        confirmAlert.setHeaderText("Voulez-vous envoyer ces données au serveur ?");
+        Optional<ButtonType> confirmResult = confirmAlert.showAndWait();
+
+        if (!confirmResult.isPresent() || !confirmResult.get().getText().equals("Confirmer"))
+            return false;
+
+        try {
+            boolean rep = databaseManager.syncData(tableView.getItems(), databaseManager.isAdmin());
+            if (!rep) {
+                showSyncError(databaseManager);
+                return false;
+            }
+            AlertUtils.showAlert(Alert.AlertType.INFORMATION, "Synchronisation", "Données envoyées avec succès.");
+            return true;
+        } catch (SQLException e) {
+            AlertUtils.showAlert(Alert.AlertType.ERROR, "Erreur",
+                    "Erreur lors de la synchronisation des données : " + e.getMessage());
+            return false;
+        }
     }
 
     /**

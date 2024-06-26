@@ -16,6 +16,8 @@ import javafx.scene.image.ImageView;
 
 public class FormLivreController {
 
+    private static final String NON_DIGIT_REGEX = "[^\\d]"; // Constante pour le motif de remplacement
+
     /**
      * Cette méthode permet de valider le contenu du TexteField
      * 
@@ -24,7 +26,7 @@ public class FormLivreController {
     public static void validateParutionField(TextField parutionField) {
         parutionField.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("\\d*")) {
-                parutionField.setText(newValue.replaceAll("[^\\d]", ""));
+                parutionField.setText(newValue.replaceAll(NON_DIGIT_REGEX, ""));
             }
         });
     }
@@ -37,7 +39,7 @@ public class FormLivreController {
     public static void filterColonneInput(TextField colonneField) {
         colonneField.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("\\d*")) {
-                colonneField.setText(newValue.replaceAll("[^\\d]", ""));
+                colonneField.setText(newValue.replaceAll(NON_DIGIT_REGEX, ""));
             }
         });
     }
@@ -50,7 +52,7 @@ public class FormLivreController {
     public static void filterRangeeInput(TextField rangeeField) {
         rangeeField.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("\\d*")) {
-                rangeeField.setText(newValue.replaceAll("[^\\d]", ""));
+                rangeeField.setText(newValue.replaceAll(NON_DIGIT_REGEX, ""));
             }
         });
     }
