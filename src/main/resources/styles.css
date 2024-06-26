@@ -19,3 +19,42 @@
     -fx-min-width: 100px;
 }
 
+.root {
+    -fx-font-family: 'Arial';
+    -fx-background-color: #f4f4f4;
+}
+
+.button {
+    -fx-background-color: #007bff;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-padding: 10 20;
+}
+
+.button:hover {
+    -fx-background-color: #0056b3;
+}
+
+.vbox {
+    -fx-padding: 20;
+    -fx-spacing: 15;
+    -fx-alignment: center;
+}
+
+.menu-bar {
+    -fx-background-color: #333;
+}
+
+.menu-bar .menu {
+    -fx-text-fill: white;
+}
+
+.menu-bar .menu-item {
+    -fx-text-fill: white;
+}
+
+.menu-bar .menu-item:hover {
+    -fx-background-color: #555;
+}

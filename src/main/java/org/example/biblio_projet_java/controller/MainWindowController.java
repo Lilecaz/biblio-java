@@ -4,9 +4,9 @@ import java.io.File;
 import java.sql.SQLException;
 import java.util.Optional;
 
-import org.example.biblio_projet_java.Bibliotheque.Livre;
 import org.example.biblio_projet_java.utils.AlertUtils;
 import org.example.biblio_projet_java.utils.WordExporter;
+import org.example.biblio_projet_java.utils.XMLFileManager;
 import org.example.biblio_projet_java.view.LivreTableView;
 
 import javafx.scene.control.Alert;
@@ -21,7 +21,6 @@ public class MainWindowController {
     }
 
     public boolean syncData(Stage primaryStage, DatabaseManager databaseManager, LivreTableView tableView) {
-        // Implement your synchronization logic here
         Alert syncChoiceAlert = new Alert(Alert.AlertType.CONFIRMATION);
         syncChoiceAlert.setTitle("Synchronisation");
         syncChoiceAlert.setHeaderText("Voulez-vous envoyer les données locales au serveur ?");
@@ -34,59 +33,79 @@ public class MainWindowController {
         syncChoiceAlert.getButtonTypes().setAll(buttonTypeOne, buttonTypeTwo, buttonTypeCancel);
 
         Optional<ButtonType> result = syncChoiceAlert.showAndWait();
-        if (result.get() == buttonTypeOne) {
+        if (result.isPresent() && result.get() == buttonTypeOne) {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("XML files (*.xml)", "*.xml"));
+            File selectedFile = fileChooser.showOpenDialog(primaryStage);
+
+            if (selectedFile != null) {
+                File loadedFile = XMLFileManager.chargerFichierXML(selectedFile, tableView);
+                if (loadedFile != null) {
+                    Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
+                    confirmAlert.setTitle("Confirmation des données");
+                    confirmAlert.setHeaderText("Voulez-vous envoyer ces données au serveur ?");
+                    confirmAlert.setContentText("Confirmez pour envoyer les données au serveur.");
+
+                    ButtonType confirmButton = new ButtonType("Confirmer");
+                    ButtonType cancelButton = new ButtonType("Annuler", ButtonBar.ButtonData.CANCEL_CLOSE);
+                    confirmAlert.getButtonTypes().setAll(confirmButton, cancelButton);
+
+                    Optional<ButtonType> confirmResult = confirmAlert.showAndWait();
+                    if (confirmResult.isPresent() && confirmResult.get() == confirmButton) {
+                        try {
+                            boolean rep = databaseManager.syncData(tableView.getItems(), databaseManager.isAdmin());
+                            if (rep) {
+                                AlertUtils.showAlert(Alert.AlertType.INFORMATION, "Synchronisation",
+                                        "Données envoyées avec succès.");
+                                return true;
+                            } else {
+                                showSyncError(databaseManager);
+                                return false;
+                            }
+                        } catch (SQLException e) {
+                            AlertUtils.showAlert(Alert.AlertType.ERROR, "Erreur",
+                                    "Erreur lors de la synchronisation des données : " + e.getMessage());
+                            return false;
+                        }
+                    }
+                } else {
+                    AlertUtils.showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors du chargement du fichier XML.");
+                }
+            }
+        } else if (result.isPresent() && result.get() == buttonTypeTwo) {
             try {
                 boolean rep = databaseManager.syncData(tableView.getItems(), databaseManager.isAdmin());
                 if (rep) {
                     AlertUtils.showAlert(Alert.AlertType.INFORMATION, "Synchronisation",
-                            "Données envoyées avec succès.");
+                            "Données récupérées avec succès.");
                     return true;
                 } else {
-                    if (databaseManager.isUserConnected()) {
-                        if (!databaseManager.isAdmin()) {
-                            AlertUtils
-                                    .showAlert(Alert.AlertType.ERROR, "Erreur",
-                                            "Vous n'avez pas les autorisations nécessaires pour effectuer cette action.");
-                            return false;
-                        } else {
-                            AlertUtils
-                                    .showAlert(Alert.AlertType.ERROR, "Erreur",
-                                            "Erreur lors de l'envoi des données : " + "Vous n'êtes pas connecté.");
-                            return false;
-                        }
-                    } else {
-                        AlertUtils
-                                .showAlert(Alert.AlertType.ERROR, "Erreur",
-                                        "Vous devez être connecté pour effectuer cette action.");
-                        return false;
-                    }
-                }
-            } catch (SQLException e) {
-                AlertUtils
-                        .showAlert(Alert.AlertType.ERROR, "Erreur",
-                                "Erreur lors de la synchronisation des données : " + e.getMessage());
-                return false;
-            }
-        } else if (result.get() == buttonTypeTwo) {
-            try {
-                boolean rep = databaseManager.syncData(tableView.getItems(), databaseManager.isAdmin());
-                if (rep) {
-                    AlertUtils
-                            .showAlert(Alert.AlertType.INFORMATION, "Synchronisation",
-                                    "Données récupérées avec succès.");
-                } else {
-                    AlertUtils
-                            .showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors de la récupération des données.");
+                    AlertUtils.showAlert(Alert.AlertType.ERROR, "Erreur",
+                            "Erreur lors de la récupération des données.");
                     return false;
                 }
             } catch (SQLException e) {
-                AlertUtils
-                        .showAlert(Alert.AlertType.ERROR, "Erreur",
-                                "Erreur lors de la synchronisation des données : " + e.getMessage());
+                AlertUtils.showAlert(Alert.AlertType.ERROR, "Erreur",
+                        "Erreur lors de la synchronisation des données : " + e.getMessage());
                 return false;
             }
         }
         return false;
+    }
+
+    private void showSyncError(DatabaseManager databaseManager) {
+        if (databaseManager.isUserConnected()) {
+            if (!databaseManager.isAdmin()) {
+                AlertUtils.showAlert(Alert.AlertType.ERROR, "Erreur",
+                        "Vous n'avez pas les autorisations nécessaires pour effectuer cette action.");
+            } else {
+                AlertUtils.showAlert(Alert.AlertType.ERROR, "Erreur",
+                        "Erreur lors de l'envoi des données : Vous n'êtes pas connecté.");
+            }
+        } else {
+            AlertUtils.showAlert(Alert.AlertType.ERROR, "Erreur",
+                    "Vous devez être connecté pour effectuer cette action.");
+        }
     }
 
     public void exportDocumentToWord(Stage primaryStage, LivreTableView tableView) {
