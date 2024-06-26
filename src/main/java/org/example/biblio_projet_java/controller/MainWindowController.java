@@ -107,6 +107,12 @@ public class MainWindowController {
         return false;
     }
 
+    /**
+     * Cette méthode affiche une alerte d'erreur lors de la synchronisation des
+     * données.
+     * 
+     * @param databaseManager
+     */
     private void showSyncError(DatabaseManager databaseManager) {
         if (databaseManager.isUserConnected()) {
             if (!databaseManager.isAdmin()) {
@@ -121,6 +127,14 @@ public class MainWindowController {
                     "Vous devez être connecté pour effectuer cette action.");
         }
     }
+
+    /**
+     * Cette méthode permet d'exporter les données de la table dans un document
+     * Word.
+     * 
+     * @param primaryStage
+     * @param tableView
+     */
 
     public void exportDocumentToWord(Stage primaryStage, LivreTableView tableView) {
         if (!tableView.getItems().isEmpty()) {
@@ -146,6 +160,13 @@ public class MainWindowController {
         }
     }
 
+    /**
+     * Cette méthode gère la connexion de l'utilisateur.
+     * 
+     * @param primaryStage
+     * @param databaseManager
+     * @return
+     */
     public boolean handleUserAdminConnection(Stage primaryStage, DatabaseManager databaseManager) {
         if (databaseManager.isUserConnected()) {
             if (databaseManager.isAdmin()) {
