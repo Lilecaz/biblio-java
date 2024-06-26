@@ -1,4 +1,4 @@
-package org.example.biblio_projet_java;
+package org.example.biblio_projet_java.utils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -7,6 +7,7 @@ import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.example.biblio_projet_java.Bibliotheque;
 import org.example.biblio_projet_java.Bibliotheque.Livre;
 import org.openxmlformats.schemas.officeDocument.x2006.sharedTypes.STOnOff1;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDecimalNumber;

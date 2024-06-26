@@ -1,4 +1,4 @@
-package org.example.biblio_projet_java;
+package org.example.biblio_projet_java.utils;
 
 import javafx.scene.control.Alert;
 
@@ -41,7 +41,7 @@ public class AlertUtils {
      * @param title     le titre de l'alerte
      * @param message   le message de l'alerte
      */
-    private static void showAlert(Alert.AlertType alertType, String title, String message) {
+    public static void showAlert(Alert.AlertType alertType, String title, String message) {
         Alert alert = new Alert(alertType);
         alert.setTitle(title);
         alert.setHeaderText(null);

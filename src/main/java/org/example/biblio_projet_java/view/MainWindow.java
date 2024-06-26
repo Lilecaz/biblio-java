@@ -10,14 +10,12 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import java.io.File;
-import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Optional;
 
-import org.example.biblio_projet_java.DatabaseManager;
-import org.example.biblio_projet_java.UserDialog;
-import org.example.biblio_projet_java.WordExporter;
-import org.example.biblio_projet_java.XMLFileManager;
+import org.example.biblio_projet_java.controller.DatabaseManager;
+import org.example.biblio_projet_java.controller.MainWindowController;
+import org.example.biblio_projet_java.utils.AlertUtils;
+import org.example.biblio_projet_java.utils.XMLFileManager;
 
 /**
  * La classe MainWindow représente la fenêtre principale de l'application.
@@ -34,6 +32,7 @@ public class MainWindow extends Application {
     private File currentFile;
     private DatabaseManager databaseManager;
     private LivreTableView tableView;
+    MainWindowController mainWindowController = new MainWindowController();
 
     /**
      * Démarre l'application en créant une nouvelle fenêtre principale.
@@ -72,15 +71,11 @@ public class MainWindow extends Application {
 
         btnConnect.setOnAction(event -> {
             showLoginDialog(primaryStage);
-            if (databaseManager.isUserConnected()) {
-                if (databaseManager.isAdmin()) {
-                    showMainWindow(primaryStage, null, true);
-                } else {
-                    showMainWindow(primaryStage, null, databaseManager.isAdmin());
-
-                }
+            boolean rep = mainWindowController.handleUserAdminConnection(primaryStage, databaseManager);
+            if (rep) {
+                showMainWindow(primaryStage, null, databaseManager.isAdmin());
             } else {
-                showAlert(Alert.AlertType.INFORMATION, "Information", "Connexion échouée.");
+                showMainWindow(primaryStage, currentFile, rep);
             }
         });
 
@@ -179,7 +174,7 @@ public class MainWindow extends Application {
             try {
                 logout(primaryStage);
             } catch (SQLException e) {
-                showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors de la déconnexion.");
+                AlertUtils.showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors de la déconnexion.");
             }
         });
 
@@ -189,7 +184,7 @@ public class MainWindow extends Application {
         MenuItem menuItem5 = new MenuItem("Infos");
 
         MenuItem syncMenuItem = new MenuItem("Synchroniser");
-        syncMenuItem.setOnAction(event -> syncData(primaryStage));
+        syncMenuItem.setOnAction(event -> syncData(primaryStage, databaseManager, tableView));
 
         Menu menu = new Menu("Fichier");
         // if (databaseManager.isUserConnected() && databaseManager.isAdmin()) {
@@ -225,7 +220,8 @@ public class MainWindow extends Application {
         if (currentFile != null) {
             XMLFileManager.sauvegarderFichierXML(currentFile, tableView.getItems());
         } else {
-            showAlert(Alert.AlertType.INFORMATION, "Information", "Aucun fichier n'est actuellement ouvert.");
+            AlertUtils.showAlert(Alert.AlertType.INFORMATION, "Information",
+                    "Aucun fichier n'est actuellement ouvert.");
         }
     }
 
@@ -250,27 +246,7 @@ public class MainWindow extends Application {
      * @param primaryStage la fenêtre principale de l'application
      */
     private void exportDocument(Stage primaryStage) {
-        if (!tableView.getItems().isEmpty()) {
-            TextInputDialog dialog = new TextInputDialog();
-            dialog.setTitle("Exporter le document Word");
-            dialog.setHeaderText("Veuillez saisir le nom du document :");
-            dialog.setContentText("Nom du document:");
-
-            Optional<String> result = dialog.showAndWait();
-            result.ifPresent(name -> {
-                WordExporter wordExporter = new WordExporter();
-                wordExporter.export(tableView.getItems(), name, primaryStage);
-                FileChooser fileChooser = new FileChooser();
-                fileChooser.setTitle("Exporter le document Word");
-                fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichiers Word", "*.docx"));
-                File selectedFile = fileChooser.showSaveDialog(primaryStage);
-                if (selectedFile != null) {
-                    wordExporter.save(selectedFile);
-                }
-            });
-        } else {
-            showAlert(Alert.AlertType.INFORMATION, "Information", "Aucun livre à exporter.");
-        }
+        mainWindowController.exportDocumentToWord(primaryStage, tableView);
     }
 
     /**
@@ -307,7 +283,7 @@ public class MainWindow extends Application {
         if (databaseManager.isUserConnected()) {
             showMainWindow(primaryStage, null, (databaseManager.isAdmin()));
         } else {
-            showAlert(Alert.AlertType.INFORMATION, "Information", "Connexion échouée.");
+            AlertUtils.showAlert(Alert.AlertType.INFORMATION, "Information", "Connexion échouée.");
         }
     }
 
@@ -321,83 +297,16 @@ public class MainWindow extends Application {
     }
 
     /**
-     * Affiche une boîte de dialogue d'alerte avec le type d'alerte spécifié, le
-     * titre et le message donnés.
-     *
-     * @param alertType le type d'alerte à afficher (Alert.AlertType)
-     * @param title     le titre de l'alerte
-     * @param message   le message de l'alerte
-     */
-    private void showAlert(Alert.AlertType alertType, String title, String message) {
-        Alert alert = new Alert(alertType);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
-    /**
-     * Démarre l'application en créant une nouvelle fenêtre principale.
+     * Syncronise les données de la table avec la base de données.
      * 
-     * @param primaryStage la fenêtre principale de l'application
-     * @throws SQLException si une erreur se produit lors de la connexion à la base
-     *                      de données
+     * @param primaryStage
+     * @param databaseManager
+     * @param tableView
      */
-    private void syncData(Stage primaryStage) {
-        // Implement your synchronization logic here
-        Alert syncChoiceAlert = new Alert(Alert.AlertType.CONFIRMATION);
-        syncChoiceAlert.setTitle("Synchronisation");
-        syncChoiceAlert.setHeaderText("Voulez-vous envoyer les données locales au serveur ?");
-        syncChoiceAlert.setContentText("Choisissez votre option.");
-
-        ButtonType buttonTypeOne = new ButtonType("Envoyer les données locales");
-        ButtonType buttonTypeTwo = new ButtonType("Récupérer les données du serveur");
-        ButtonType buttonTypeCancel = new ButtonType("Annuler", ButtonBar.ButtonData.CANCEL_CLOSE);
-
-        syncChoiceAlert.getButtonTypes().setAll(buttonTypeOne, buttonTypeTwo, buttonTypeCancel);
-
-        Optional<ButtonType> result = syncChoiceAlert.showAndWait();
-        if (result.get() == buttonTypeOne) {
-            try {
-                boolean rep = databaseManager.syncData(tableView.getItems(), databaseManager.isAdmin());
-                if (rep) {
-                    showAlert(Alert.AlertType.INFORMATION, "Synchronisation", "Données envoyées avec succès.");
-                } else {
-                    if (databaseManager.isUserConnected()) {
-                        if (!databaseManager.isAdmin()) {
-                            showAlert(Alert.AlertType.ERROR, "Erreur",
-                                    "Vous n'avez pas les autorisations nécessaires pour effectuer cette action.");
-                        } else {
-                            showAlert(Alert.AlertType.ERROR, "Erreur",
-                                    "Erreur lors de l'envoi des données : " + "Vous n'êtes pas connecté.");
-                            primaryStage.close();
-                            showLoginDialog(primaryStage);
-                        }
-                    } else {
-                        showAlert(Alert.AlertType.ERROR, "Erreur",
-                                "Vous devez être connecté pour effectuer cette action.");
-                        primaryStage.close();
-                        start(primaryStage);
-                    }
-                }
-            } catch (SQLException e) {
-                showAlert(Alert.AlertType.ERROR, "Erreur",
-                        "Erreur lors de la synchronisation des données : " + e.getMessage());
-            }
-        } else if (result.get() == buttonTypeTwo) {
-            try {
-                boolean rep = databaseManager.syncData(tableView.getItems(), databaseManager.isAdmin());
-                if (rep) {
-                    showAlert(Alert.AlertType.INFORMATION, "Synchronisation", "Données récupérées avec succès.");
-                } else {
-                    showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors de la récupération des données.");
-                    primaryStage.close();
-                    showLoginDialog(primaryStage);
-                }
-            } catch (SQLException e) {
-                showAlert(Alert.AlertType.ERROR, "Erreur",
-                        "Erreur lors de la synchronisation des données : " + e.getMessage());
-            }
+    private void syncData(Stage primaryStage, DatabaseManager databaseManager, LivreTableView tableView) {
+        boolean rep = mainWindowController.syncData(primaryStage, databaseManager, tableView);
+        if (rep) {
+            showMainWindow(primaryStage, null, databaseManager.isAdmin());
         }
     }
 

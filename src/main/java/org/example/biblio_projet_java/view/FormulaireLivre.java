@@ -10,10 +10,9 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
-import org.example.biblio_projet_java.Bibliotheque;
-import org.example.biblio_projet_java.DatabaseManager;
 import org.example.biblio_projet_java.Bibliotheque.Livre;
-import org.example.biblio_projet_java.Bibliotheque.Livre.Auteur;
+import org.example.biblio_projet_java.controller.DatabaseManager;
+import org.example.biblio_projet_java.controller.FormLivreController;
 
 /**
  * Cette classe représente un formulaire pour ajouter un livre.
@@ -56,25 +55,13 @@ public class FormulaireLivre extends VBox {
         Label presentationLabel = new Label("Présentation: ");
 
         Label parutionLabel = new Label("Parution: ");
-        parutionField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.matches("\\d*")) {
-                parutionField.setText(newValue.replaceAll("[^\\d]", ""));
-            }
-        });
+        FormLivreController.validateParutionField(parutionField);
 
         Label colonneLabel = new Label("Colonne: ");
-        colonneField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.matches("\\d*")) {
-                colonneField.setText(newValue.replaceAll("[^\\d]", ""));
-            }
-        });
+        FormLivreController.filterColonneInput(colonneField);
 
         Label rangeeLabel = new Label("Rangée: ");
-        rangeeField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.matches("\\d*")) {
-                rangeeField.setText(newValue.replaceAll("[^\\d]", ""));
-            }
-        });
+        FormLivreController.filterRangeeInput(rangeeField);
 
         Label empruntLabel = new Label("Emprunt: ");
 
@@ -83,49 +70,12 @@ public class FormulaireLivre extends VBox {
         resumeArea.setPrefRowCount(3);
 
         Label lienLabel = new Label("Lien: ");
-        lienField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.isEmpty()) {
-                Image image = new Image(newValue);
-                previewImageView.setImage(image);
-            } else {
-                // Effacer l'aperçu de l'image s'il n'y a pas de lien
-                previewImageView.setImage(null);
-            }
-        });
+        FormLivreController.handleLinkChange(lienField, previewImageView);
 
         ajouterButton.setOnAction(event -> {
-            if (validateFields() && !alreadyExists(tableView)) {
-                Livre nouveauLivre = new Livre();
-                nouveauLivre.setTitre(titreField.getText());
-                String[] auteur = auteurField.getText().split(" ");
-                Livre.Auteur auteurObj = new Livre.Auteur();
-                if (auteur.length > 1) {
-                    auteurObj.setNom(auteur[0]);
-                    auteurObj.setPrenom(auteur[1]);
-                } else {
-                    auteurObj.setNom(auteur[0]);
-                }
-                nouveauLivre.setAuteur(auteurObj);
-                nouveauLivre.setPresentation(presentationField.getText());
-                nouveauLivre.setParution(Integer.parseInt(parutionField.getText()));
-                nouveauLivre.setColonne(Short.parseShort(colonneField.getText()));
-                nouveauLivre.setRangee(Short.parseShort(rangeeField.getText()));
-                nouveauLivre.setEmprunt(empruntCheckBox.isSelected());
-                nouveauLivre.setResume(resumeArea.getText());
-                nouveauLivre.setLien(lienField.getText());
-
-                try {
-                    if (dbManager.ajouterLivre(nouveauLivre)) {
-                        tableView.ajouterLivre(nouveauLivre);
-
-                        clearFields();
-                    } else {
-                        showAlert("Erreur lors de l'ajout du livre à la base de données.");
-                    }
-                } catch (SQLException e) {
-                    showAlert("Erreur lors de l'ajout du livre à la base de données : " + e.getMessage());
-                }
-            }
+            FormLivreController.handleNewBookSubmission(tableView, dbManager, titreField, auteurField,
+                    presentationField, parutionField, colonneField, rangeeField, empruntCheckBox, resumeArea,
+                    lienField);
         });
 
         GridPane gridPane = new GridPane();
@@ -151,52 +101,6 @@ public class FormulaireLivre extends VBox {
     }
 
     /**
-     * Valide les champs du formulaire.
-     * 
-     * @return true si tous les champs sont valides, sinon false.
-     */
-    private boolean validateFields() {
-        if (titreField.getText().isEmpty() || auteurField.getText().isEmpty() ||
-                presentationField.getText().isEmpty() || parutionField.getText().isEmpty() ||
-                colonneField.getText().isEmpty() || rangeeField.getText().isEmpty()) {
-            showAlert("Tous les champs sont obligatoires.");
-            return false;
-        }
-
-        int parution = Integer.parseInt(parutionField.getText());
-        if (parution > LocalDate.now().getYear()) {
-            showAlert("L'année de parution ne peut pas être supérieure à la date actuelle.");
-            return false;
-        }
-
-        int rangee = Integer.parseInt(rangeeField.getText());
-        if (rangee < 1 || rangee > 5) {
-            showAlert("La rangée du livre doit être comprise entre 1 et 5.");
-            return false;
-        }
-
-        int colonne = Integer.parseInt(colonneField.getText());
-        if (colonne < 0 || colonne > 7) {
-            showAlert("La colonne doit être comprise entre 0 et 7.");
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Efface les champs du formulaire.
-     */
-    private void clearFields() {
-        titreField.clear();
-        auteurField.clear();
-        presentationField.clear();
-        parutionField.clear();
-        colonneField.clear();
-        rangeeField.clear();
-    }
-
-    /**
      * Affiche une alerte de type avertissement avec le message spécifié.
      *
      * @param message le message à afficher dans l'alerte
@@ -207,28 +111,6 @@ public class FormulaireLivre extends VBox {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
-    }
-
-    /**
-     * Vérifie si un livre existe déjà dans la bibliothèque.
-     * 
-     * @param tableView la table view contenant les livres de la bibliothèque
-     * @return true si le livre existe déjà, false sinon
-     */
-    public boolean alreadyExists(LivreTableView tableView) {
-        String nomLivre = titreField.getText();
-        int anneeParution = Integer.parseInt(parutionField.getText());
-
-        for (Livre livre : tableView.getItems()) {
-            if (livre.getTitre().equals(nomLivre) &&
-                    livre.getAuteur().getNom().equals(auteurField.getText().split(" ")[0]) &&
-                    livre.getAuteur().getPrenom().equals(auteurField.getText().split(" ")[1]) &&
-                    livre.getParution() == anneeParution) {
-                showAlert("Ce livre existe déjà dans la bibliothèque.");
-                return true;
-            }
-        }
-        return false;
     }
 
     /**

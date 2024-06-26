@@ -1,4 +1,4 @@
-package org.example.biblio_projet_java;
+package org.example.biblio_projet_java.utils;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
@@ -9,6 +9,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import org.example.biblio_projet_java.Bibliotheque;
 import org.example.biblio_projet_java.Bibliotheque.Livre;
 import org.example.biblio_projet_java.view.LivreTableView;
 

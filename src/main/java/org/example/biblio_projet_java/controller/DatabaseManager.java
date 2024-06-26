@@ -1,4 +1,4 @@
-package org.example.biblio_projet_java;
+package org.example.biblio_projet_java.controller;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,9 +13,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import org.example.biblio_projet_java.AlertUtils;
 
 import org.example.biblio_projet_java.Bibliotheque.Livre;
+import org.example.biblio_projet_java.utils.AlertUtils;
 
 import javafx.collections.ObservableList;
 
