@@ -1,22 +1,47 @@
-/* Style pour le formulaire */
+/* styles.css */
+
 .formulaire {
-    -fx-padding: 10px;
-    -fx-spacing: 10px;
+    padding: 20px;
+    background-color: #f0f0f0;
+    border-radius: 10px;
 }
 
-/* Style pour les étiquettes */
-.formulaire .label {
-    -fx-font-weight: bold;
-}
-
-/* Style pour les champs de texte */
-.formulaire .text-field {
-    -fx-pref-width: 200px;
-}
-
-/* Style pour les boutons */
+.formulaire .text-field,
+.formulaire .text-area,
 .formulaire .button {
-    -fx-min-width: 100px;
+    min-width: 300px;
+    max-width: 400px;
+    font-size: 14px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.formulaire .button {
+    background-color: #007bff;
+    text-fill: white;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.formulaire .button:hover {
+    background-color: #0056b3;
+}
+
+.formulaire .label {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.formulaire .image-view {
+    max-width: 200px;
+    margin-top: 10px;
+}
+
+.grid-pane {
+    vgap: 15px;
+    hgap: 15px;
 }
 
 .root {
@@ -43,18 +68,53 @@
     -fx-alignment: center;
 }
 
-.menu-bar {
-    -fx-background-color: #333;
+
+.table-view {
+    -fx-background-color: #f0f0f0;
+    -fx-border-color: #d0d0d0;
 }
 
-.menu-bar .menu {
-    -fx-text-fill: white;
+.table-view .column-header-background {
+    -fx-background-color: #2a2a2a;
 }
 
-.menu-bar .menu-item {
-    -fx-text-fill: white;
+.table-view .column-header,
+.table-view .filler {
+    -fx-border-color: transparent transparent #d0d0d0 transparent;
 }
 
-.menu-bar .menu-item:hover {
-    -fx-background-color: #555;
+.table-view .column-header .label {
+    -fx-text-fill: #ffffff;
+    -fx-font-weight: bold;
+}
+
+.table-row-cell {
+    -fx-background-color: #ffffff;
+}
+
+.table-row-cell:filled:selected,
+.table-row-cell:filled:hover {
+    -fx-background-color: #b3e5fc;
+}
+
+.table-view .cell {
+    -fx-padding: 8px;
+}
+
+.table-view .button {
+    -fx-background-color: #ff6666;
+    -fx-text-fill: #ffffff;
+    -fx-font-weight: bold;
+    -fx-border-color: #ff3333;
+    -fx-border-width: 2px;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+}
+
+.table-view .button:hover {
+    -fx-background-color: #ff3333;
+}
+
+.table-view .button:pressed {
+    -fx-background-color: #ff0000;
 }

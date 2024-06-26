@@ -3,21 +3,24 @@ package org.example.biblio_projet_java.view;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.util.List;
 
 import org.example.biblio_projet_java.Bibliotheque.Livre;
 import org.example.biblio_projet_java.controller.DatabaseManager;
 import org.example.biblio_projet_java.controller.FormLivreController;
+import org.example.biblio_projet_java.utils.AlertUtils;
 
 /**
  * Cette classe représente un formulaire pour ajouter un livre.
+ * Elle étend la classe VBox et contient des champs de texte pour le titre,
+ * l'auteur,
+ * la présentation, la parution, la colonne, la rangée, le résumé, le lien et un
+ * bouton
+ * pour ajouter le livre.
  */
-
 public class FormulaireLivre extends VBox {
 
     public static final TextField titreField = new TextField();
@@ -36,11 +39,10 @@ public class FormulaireLivre extends VBox {
     private DatabaseManager dbManager;
 
     /**
-     * Cette classe représente un formulaire pour ajouter un livre.
+     * Constructeur de la classe FormulaireLivre.
      * 
-     * @param tableView La table view dans laquelle le livre sera ajouté.
-     * @param dbManager Le gestionnaire de base de données utilisé pour ajouter le
-     *                  livre.
+     * @param tableView
+     * @param dbManager
      */
     public FormulaireLivre(LivreTableView tableView, DatabaseManager dbManager) {
         this.dbManager = dbManager;
@@ -48,35 +50,39 @@ public class FormulaireLivre extends VBox {
         previewImageView = new ImageView();
         previewImageView.setFitWidth(200); // Ajustez la largeur de l'aperçu selon vos besoins
         previewImageView.setPreserveRatio(true);
+
         Label titreLabel = new Label("Titre: ");
-
         Label auteurLabel = new Label("Auteur: ");
-
         Label presentationLabel = new Label("Présentation: ");
-
         Label parutionLabel = new Label("Parution: ");
-        FormLivreController.validateParutionField(parutionField);
-
         Label colonneLabel = new Label("Colonne: ");
-        FormLivreController.filterColonneInput(colonneField);
-
         Label rangeeLabel = new Label("Rangée: ");
-        FormLivreController.filterRangeeInput(rangeeField);
-
         Label empruntLabel = new Label("Emprunt: ");
-
         Label resumeLabel = new Label("Résumé: ");
-        resumeArea.setWrapText(true);
-        resumeArea.setPrefRowCount(3);
-
         Label lienLabel = new Label("Lien: ");
-        FormLivreController.handleLinkChange(lienField, previewImageView);
 
-        ajouterButton.setOnAction(event -> {
-            FormLivreController.handleNewBookSubmission(tableView, dbManager, titreField, auteurField,
-                    presentationField, parutionField, colonneField, rangeeField, empruntCheckBox, resumeArea,
-                    lienField);
-        });
+        titreField.getStyleClass().add("text-field");
+        auteurField.getStyleClass().add("text-field");
+        presentationField.getStyleClass().add("text-field");
+        parutionField.getStyleClass().add("text-field");
+        colonneField.getStyleClass().add("text-field");
+        rangeeField.getStyleClass().add("text-field");
+        empruntCheckBox.getStyleClass().add("check-box");
+        resumeArea.getStyleClass().add("text-area");
+        lienField.getStyleClass().add("text-field");
+        ajouterButton.getStyleClass().add("button");
+
+        titreLabel.getStyleClass().add("label");
+        auteurLabel.getStyleClass().add("label");
+        presentationLabel.getStyleClass().add("label");
+        parutionLabel.getStyleClass().add("label");
+        colonneLabel.getStyleClass().add("label");
+        rangeeLabel.getStyleClass().add("label");
+        empruntLabel.getStyleClass().add("label");
+        resumeLabel.getStyleClass().add("label");
+        lienLabel.getStyleClass().add("label");
+
+        previewImageView.getStyleClass().add("image-view");
 
         GridPane gridPane = new GridPane();
         gridPane.setVgap(10);
@@ -94,6 +100,8 @@ public class FormulaireLivre extends VBox {
         gridPane.addRow(9, ajouterButton);
         gridPane.addRow(10, previewImageView);
 
+        gridPane.getStyleClass().add("grid-pane");
+
         this.getChildren().add(gridPane);
         chargerLivresDansTableView(tableView);
 
@@ -101,30 +109,17 @@ public class FormulaireLivre extends VBox {
     }
 
     /**
-     * Affiche une alerte de type avertissement avec le message spécifié.
-     *
-     * @param message le message à afficher dans l'alerte
+     * Cette méthode charge les livres dans le TableView.
+     * 
+     * @param tableView
      */
-    private void showAlert(String message) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("Attention");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
 
-    /**
-     * Charge les livres depuis la base de données et les ajoute à la TableView
-     * spécifiée.
-     *
-     * @param tableView la TableView dans laquelle les livres doivent être ajoutés
-     */
     public void chargerLivresDansTableView(LivreTableView tableView) {
         try {
             List<Livre> livres = dbManager.getLivres();
             tableView.getItems().addAll(livres);
         } catch (SQLException e) {
-            showAlert("Erreur lors du chargement des livres depuis la base de données : " + e.getMessage());
+            AlertUtils.showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors de la récupération des livres");
         }
     }
 }

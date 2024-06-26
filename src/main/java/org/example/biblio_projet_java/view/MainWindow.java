@@ -47,7 +47,7 @@ public class MainWindow extends Application {
 
         VBox startBox = createStartBox(primaryStage);
 
-        Scene startScene = new Scene(startBox);
+        Scene startScene = new Scene(startBox, 800, 600);
         startScene.getStylesheets().add(getClass().getResource("/styles.css").toExternalForm());
         primaryStage.setTitle("Bibliotheque - Choisissez une option");
         primaryStage.setScene(startScene);
@@ -159,21 +159,26 @@ public class MainWindow extends Application {
     private MenuBar createMenuBar(Stage primaryStage) {
         MenuItem menuItem1 = new MenuItem("Ouvrir");
         menuItem1.setOnAction(event -> openFile(primaryStage));
+        menuItem1.getStyleClass().add("menu-item");
 
         MenuItem menuItem2 = new MenuItem("Quitter");
         menuItem2.setOnAction(event -> {
             currentFile = null;
             tableView.getItems().clear();
         });
+        menuItem2.getStyleClass().add("menu-item");
 
         MenuItem menuItem6 = new MenuItem("Exporter");
         menuItem6.setOnAction(event -> exportDocument(primaryStage));
+        menuItem6.getStyleClass().add("menu-item");
 
         MenuItem menuItem3 = new MenuItem("Sauvegarder");
         menuItem3.setOnAction(event -> saveFile());
+        menuItem3.getStyleClass().add("menu-item");
 
         MenuItem menuItem4 = new MenuItem("Sauvegarder sous...");
         menuItem4.setOnAction(event -> saveFileAs(primaryStage));
+        menuItem4.getStyleClass().add("menu-item");
 
         MenuItem decoMenuItem = new MenuItem("Se déconnecter");
         decoMenuItem.setOnAction(event -> {
@@ -183,27 +188,30 @@ public class MainWindow extends Application {
                 AlertUtils.showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors de la déconnexion.");
             }
         });
+        decoMenuItem.getStyleClass().add("menu-item");
 
         MenuItem connectMenuItem = new MenuItem("Se connecter");
         connectMenuItem.setOnAction(event -> showLoginDialog(primaryStage));
+        connectMenuItem.getStyleClass().add("menu-item");
 
         MenuItem menuItem5 = new MenuItem("Infos");
+        menuItem5.getStyleClass().add("menu-item");
 
         MenuItem syncMenuItem = new MenuItem("Synchroniser");
         syncMenuItem.setOnAction(event -> syncData(primaryStage, databaseManager, tableView));
+        syncMenuItem.getStyleClass().add("menu-item");
 
         Menu menu = new Menu("Fichier");
-        // if (databaseManager.isUserConnected() && databaseManager.isAdmin()) {
         menu.getItems().addAll(menuItem1, menuItem2, menuItem6, syncMenuItem);
-        // } else {
-        // menu.getItems().addAll(menuItem1, menuItem2, menuItem6);
-        // }
+        menu.getStyleClass().add("menu");
 
         Menu menu2 = new Menu("Edition");
         menu2.getItems().addAll(menuItem3, menuItem4);
+        menu2.getStyleClass().add("menu");
 
         Menu menu3 = new Menu("About");
         menu3.getItems().addAll(menuItem5);
+        menu3.getStyleClass().add("menu");
 
         Menu menuUser = new Menu(databaseManager.isUserConnected() ? databaseManager.getUsername() : "Se connecter");
         if (databaseManager.isUserConnected()) {
@@ -211,9 +219,9 @@ public class MainWindow extends Application {
         } else {
             menuUser.getItems().add(connectMenuItem);
         }
+        menuUser.getStyleClass().add("menu");
 
         MenuBar menuBar = new MenuBar();
-
         menuBar.getMenus().addAll(menu, menu2, menu3, menuUser);
         menuBar.getStyleClass().add("menu-bar");
         return menuBar;

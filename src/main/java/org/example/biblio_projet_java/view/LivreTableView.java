@@ -23,6 +23,9 @@ import javafx.util.converter.ShortStringConverter;
  */
 public class LivreTableView extends TableView<Bibliotheque.Livre> {
 
+    /**
+     * Constructeur de la classe LivreTableView.
+     */
     @SuppressWarnings("unchecked")
     public LivreTableView() {
         setEditable(true);
