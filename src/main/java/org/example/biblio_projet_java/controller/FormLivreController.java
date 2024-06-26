@@ -43,8 +43,13 @@ public class FormLivreController {
     public static void handleLinkChange(TextField lienField, ImageView previewImageView) {
         lienField.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.isEmpty()) {
-                Image image = new Image(newValue);
-                previewImageView.setImage(image);
+                try {
+                    Image image = new Image(newValue);
+                    previewImageView.setImage(image);
+                    lienField.setStyle("-fx-text-fill: black;");
+                } catch (IllegalArgumentException e) {
+                    lienField.setStyle("-fx-text-fill: red;");
+                }
             } else {
                 // Effacer l'aperçu de l'image s'il n'y a pas de lien
                 previewImageView.setImage(null);

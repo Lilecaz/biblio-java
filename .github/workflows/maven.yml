@@ -29,6 +29,12 @@ jobs:
           DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
       - name: Generate Javadoc
         run: mvn javadoc:javadoc
+      - name : Upload Javadoc
+        uses: actions/upload-artifact@v2
+        with:
+          name: javadoc
+          path: target/site/apidocs/
+
 
       # Uncomment and set up the following lines for SonarCloud analysis
       # - name: Analyze with SonarCloud

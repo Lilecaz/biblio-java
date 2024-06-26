@@ -48,7 +48,8 @@ public class MainWindow extends Application {
         VBox startBox = createStartBox(primaryStage);
 
         Scene startScene = new Scene(startBox);
-        primaryStage.setTitle("Biblio - Choisissez une option");
+        startScene.getStylesheets().add(getClass().getResource("/styles.css").toExternalForm());
+        primaryStage.setTitle("Bibliotheque - Choisissez une option");
         primaryStage.setScene(startScene);
         primaryStage.show();
     }
@@ -62,12 +63,17 @@ public class MainWindow extends Application {
      */
     private VBox createStartBox(Stage primaryStage) {
         VBox startBox = new VBox(10);
-        startBox.setPrefSize(300, 200);
+        startBox.setPrefSize(500, 300);
         startBox.setSpacing(10);
+        startBox.getStyleClass().add("vbox");
 
         Button btnConnect = new Button("Se connecter");
         Button btnSignUp = new Button("S'inscrire");
         Button btnOpenFile = new Button("Ouvrir un fichier");
+
+        btnConnect.getStyleClass().add("button");
+        btnSignUp.getStyleClass().add("button");
+        btnOpenFile.getStyleClass().add("button");
 
         btnConnect.setOnAction(event -> {
             showLoginDialog(primaryStage);
@@ -207,8 +213,9 @@ public class MainWindow extends Application {
         }
 
         MenuBar menuBar = new MenuBar();
-        menuBar.getMenus().addAll(menu, menu2, menu3, menuUser);
 
+        menuBar.getMenus().addAll(menu, menu2, menu3, menuUser);
+        menuBar.getStyleClass().add("menu-bar");
         return menuBar;
     }
 
