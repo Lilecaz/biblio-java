@@ -11,6 +11,7 @@ import java.util.Optional;
 
 import org.example.biblio_projet_java.controller.DatabaseManager;
 import org.example.biblio_projet_java.controller.UserController;
+import org.example.biblio_projet_java.utils.AlertUtils;
 
 /**
  * Cette classe représente une boîte de dialogue pour l'inscription et la
@@ -33,13 +34,65 @@ public class UserDialog {
         TextField username = new TextField();
         PasswordField password = new PasswordField();
         addFieldsToGrid(grid, username, password, null);
+        ButtonType resetPasswordButtonType = new ButtonType("Reset Password", ButtonBar.ButtonData.OTHER);
+        dialog.getDialogPane().getButtonTypes().add(resetPasswordButtonType);
+
+        dialog.getDialogPane().setContent(grid);
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == resetPasswordButtonType) {
+                showResetPasswordDialog(primaryStage, databaseManager);
+                return null;
+            }
+            return dialogButton.getButtonData() == ButtonBar.ButtonData.OK_DONE
+                    ? new Pair<>(username.getText(), password.getText())
+                    : null;
+        });
+
+        processDialogResult(dialog.showAndWait(), databaseManager, false);
+    }
+
+    public static void showResetPasswordDialog(Stage primaryStage, DatabaseManager databaseManager) {
+        Dialog<Pair<String, String>> dialog = createDialog("Reset Password", "Reset");
+        GridPane grid = createGridPane();
+        TextField username = new TextField();
+        TextField email = new TextField();
+        addResetPasswordFieldsToGrid(grid, username, email);
 
         dialog.getDialogPane().setContent(grid);
         dialog.setResultConverter(dialogButton -> dialogButton.getButtonData() == ButtonBar.ButtonData.OK_DONE
-                ? new Pair<>(username.getText(), password.getText())
+                ? new Pair<>(username.getText(), email.getText())
                 : null);
 
-        processDialogResult(dialog.showAndWait(), databaseManager, false);
+        Optional<Pair<String, String>> result = dialog.showAndWait();
+        result.ifPresent(credentials -> {
+            // Implémentez ici la logique pour la réinitialisation du mot de passe
+            String user = credentials.getKey();
+            String paswword = credentials.getValue();
+            UserController controller = new UserController(databaseManager);
+            try {
+                boolean success = controller.resetPassword(user, paswword);
+                if (success) {
+                    AlertUtils.showAlert(Alert.AlertType.INFORMATION, "Reset Password",
+                            "Le mot de passe a été réinitialisé avec succès.");
+                } else {
+                    AlertUtils.showAlert(Alert.AlertType.ERROR, "Reset Password",
+                            "Échec de la réinitialisation du mot de passe.");
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                AlertUtils.showAlert(Alert.AlertType.ERROR, "Erreur",
+                        "Erreur lors de la réinitialisation du mot de passe.");
+            }
+        });
+    }
+
+    private static void addResetPasswordFieldsToGrid(GridPane grid, TextField username, TextField email) {
+        username.setPromptText("Username");
+        email.setPromptText("Email");
+        grid.add(new Label("Username:"), 0, 0);
+        grid.add(username, 1, 0);
+        grid.add(new Label("Email:"), 0, 1);
+        grid.add(email, 1, 1);
     }
 
     /**

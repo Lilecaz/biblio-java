@@ -77,6 +77,10 @@ public class UserController {
         }
     }
 
+    public boolean resetPassword(String user, String password) throws SQLException {
+        return databaseManager.resetPassword(user, password);
+    }
+
     /**
      * Configure le contenu de la boîte de dialogue d'inscription avec les champs
      * requis.

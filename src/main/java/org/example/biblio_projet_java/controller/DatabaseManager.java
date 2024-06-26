@@ -131,6 +131,20 @@ public class DatabaseManager {
         }
     }
 
+    public boolean resetPassword(String user2, String password2) {
+        String hashedPassword = hashPassword(password2);
+        String query = "UPDATE users SET password = ? WHERE username = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, hashedPassword);
+            stmt.setString(2, user2);
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     /**
      * Authentifie un utilisateur en vérifiant les informations de connexion
      * fournies.
