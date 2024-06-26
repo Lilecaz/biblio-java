@@ -342,6 +342,17 @@ public class DatabaseManager {
         return "admin".equals(usertype);
     }
 
+    /**
+ * Synchronise les données des livres entre une liste observable d'items et la base de données.
+ * Cette méthode vérifie si l'utilisateur est administrateur avant de procéder à la synchronisation.
+ * Si l'utilisateur est administrateur, elle compare les livres dans la liste fournie avec ceux
+ * déjà présents dans la base de données. Les nouveaux livres trouvés sont ajoutés à la base de données.
+ * 
+ * @param items La liste observable d'objets de type {@link Livre} contenant les livres à synchroniser.
+ * @param isUserAdmin Un booléen indiquant si l'utilisateur est administrateur ou non.
+ * @return Retourne true si la synchronisation a réussi (utilisateur administrateur), sinon false.
+ * @throws SQLException Lancée en cas d'erreur lors de l'accès à la base de données.
+ */
     public boolean syncData(ObservableList<Livre> items, boolean isUserAdmin) throws SQLException {
         List<Livre> livresInDatabase = new ArrayList<>();
         List<Livre> newLivres = new ArrayList<>();
