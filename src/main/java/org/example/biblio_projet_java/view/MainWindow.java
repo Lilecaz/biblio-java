@@ -200,9 +200,14 @@ public class MainWindow extends Application {
         MenuItem syncMenuItem = new MenuItem("Synchroniser");
         syncMenuItem.setOnAction(event -> syncData(primaryStage, databaseManager, tableView));
         syncMenuItem.getStyleClass().add("menu-item");
-
         Menu menu = new Menu("Fichier");
-        menu.getItems().addAll(menuItem1, menuItem2, menuItem6, syncMenuItem);
+        if (!databaseManager.isAdmin()) {
+            // Ajoute uniquement "Exporter" pour les utilisateurs non admins
+            menu.getItems().add(menuItem6);
+        } else {
+            // Ajoute tous les éléments pour les admins
+            menu.getItems().addAll(menuItem1, menuItem2, syncMenuItem, menuItem6);
+        }
         menu.getStyleClass().add("menu");
 
         Menu menu2 = new Menu("Edition");
