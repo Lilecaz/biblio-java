@@ -16,13 +16,18 @@ import javafx.scene.control.TextInputDialog;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+/**
+ * Cette classe représente le contrôleur de la fenêtre principale.
+ * Elle contient des méthodes pour synchroniser les données, exporter un
+ * document Word et gérer la connexion de l'utilisateur.
+ */
 public class MainWindowController {
     public MainWindowController() {
     }
 
     /**
-     * Cette méthode permet de gérer la synchronisation des données entre l'appli
-     * locale et la db
+     * Cette méthode permet de synchroniser les données locales avec le serveur ou
+     * du serveur vers un XML.
      * 
      * @param primaryStage
      * @param databaseManager
@@ -103,8 +108,8 @@ public class MainWindowController {
     }
 
     /**
-     * Cette méthode permet d'afficher les alertes lors de la connexion et en
-     * fonction des autorisations du user
+     * Cette méthode affiche une alerte d'erreur lors de la synchronisation des
+     * données.
      * 
      * @param databaseManager
      */
@@ -124,11 +129,13 @@ public class MainWindowController {
     }
 
     /**
-     * Cette méthode permet d'exporter les données de LivreTableView vers un .doc
+     * Cette méthode permet d'exporter les données de la table dans un document
+     * Word.
      * 
      * @param primaryStage
      * @param tableView
      */
+
     public void exportDocumentToWord(Stage primaryStage, LivreTableView tableView) {
         if (!tableView.getItems().isEmpty()) {
             TextInputDialog dialog = new TextInputDialog();
@@ -154,8 +161,7 @@ public class MainWindowController {
     }
 
     /**
-     * Cette méthode permet de vérifier l'état de connexion du user à la db et son
-     * statut d'admin
+     * Cette méthode gère la connexion de l'utilisateur.
      * 
      * @param primaryStage
      * @param databaseManager
