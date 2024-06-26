@@ -57,7 +57,7 @@ public class XMLFileManager {
      * @return Le fichier dans lequel les livres ont été sauvegardés, ou null si
      *         l'opération a été annulée ou a échoué.
      */
-    public static File sauvegarderFichierXML(File file, List<Livre> livres) {
+    public static boolean sauvegarderFichierXML(File file, List<Livre> livres) {
         try {
             JAXBContext context = JAXBContext.newInstance(Bibliotheque.class);
             Marshaller marshaller = context.createMarshaller();
@@ -67,7 +67,6 @@ public class XMLFileManager {
             bibliotheque.getLivre().addAll(livres);
 
             if (file.exists()) {
-                // Demander à l'utilisateur s'il souhaite remplacer le fichier existant
                 Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
                 confirmAlert.setTitle("Confirmation");
                 confirmAlert.setHeaderText(null);
@@ -79,34 +78,22 @@ public class XMLFileManager {
                 Optional<ButtonType> result = confirmAlert.showAndWait();
                 if (result.isPresent() && result.get() == yesButton) {
                     marshaller.marshal(bibliotheque, file);
-                    return file;
+                    return true;
                 } else {
-                    // L'utilisateur a annulé l'opération, retourner null
-                    return null;
+                    return false;
                 }
             } else {
-                // Le fichier n'existe pas, créer un nouveau fichier
-                if (file.createNewFile()) {
-                    marshaller.marshal(bibliotheque, file);
-                    return file;
-                } else {
-                    // Erreur lors de la création du fichier, afficher une alerte
-                    Alert errorAlert = new Alert(Alert.AlertType.ERROR);
-                    errorAlert.setTitle("Erreur");
-                    errorAlert.setHeaderText(null);
-                    errorAlert.setContentText("Erreur lors de la création du fichier XML.");
-                    errorAlert.showAndWait();
-                    return null;
-                }
+                file.createNewFile();
+                marshaller.marshal(bibliotheque, file);
+                return true;
             }
         } catch (IOException | JAXBException e) {
-            // Afficher une alerte en cas d'erreur
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Erreur");
             alert.setHeaderText(null);
             alert.setContentText("Erreur lors de la sauvegarde du fichier XML.");
             alert.showAndWait();
-            return null;
+            return false;
         }
     }
 

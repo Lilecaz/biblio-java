@@ -86,23 +86,25 @@ public class MainWindowController {
                     AlertUtils.showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors du chargement du fichier XML.");
                 }
             }
-        } else if (result.isPresent() && result.get() == buttonTypeTwo) {
-            try {
-                boolean rep = databaseManager.syncData(tableView.getItems(), databaseManager.isAdmin());
-                if (rep) {
+        } else if (result.get() == buttonTypeTwo) {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Sélectionner un fichier XML");
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichiers XML", "*.xml"));
+            File selectedFile = fileChooser.showSaveDialog(primaryStage);
+
+            if (selectedFile != null) {
+                boolean success = XMLFileManager.sauvegarderFichierXML(selectedFile, tableView.getItems());
+                if (success) {
                     AlertUtils.showAlert(Alert.AlertType.INFORMATION, "Synchronisation",
-                            "Données récupérées avec succès.");
+                            "Données sauvegardées avec succès dans le fichier XML.");
                     return true;
                 } else {
                     AlertUtils.showAlert(Alert.AlertType.ERROR, "Erreur",
-                            "Erreur lors de la récupération des données.");
-                    return false;
+                            "Erreur lors de la sauvegarde des données dans le fichier XML.");
                 }
-            } catch (SQLException e) {
-                AlertUtils.showAlert(Alert.AlertType.ERROR, "Erreur",
-                        "Erreur lors de la synchronisation des données : " + e.getMessage());
-                return false;
             }
+        } else {
+
         }
         return false;
     }
