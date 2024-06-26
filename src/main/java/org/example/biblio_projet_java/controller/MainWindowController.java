@@ -16,10 +16,24 @@ import javafx.scene.control.TextInputDialog;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+/**
+ * Cette classe représente le contrôleur de la fenêtre principale.
+ * Elle contient des méthodes pour synchroniser les données, exporter un
+ * document Word et gérer la connexion de l'utilisateur.
+ */
 public class MainWindowController {
     public MainWindowController() {
     }
 
+    /**
+     * Cette méthode permet de synchroniser les données locales avec le serveur ou
+     * du serveur vers un XML.
+     * 
+     * @param primaryStage
+     * @param databaseManager
+     * @param tableView
+     * @return
+     */
     public boolean syncData(Stage primaryStage, DatabaseManager databaseManager, LivreTableView tableView) {
         Alert syncChoiceAlert = new Alert(Alert.AlertType.CONFIRMATION);
         syncChoiceAlert.setTitle("Synchronisation");
@@ -93,6 +107,12 @@ public class MainWindowController {
         return false;
     }
 
+    /**
+     * Cette méthode affiche une alerte d'erreur lors de la synchronisation des
+     * données.
+     * 
+     * @param databaseManager
+     */
     private void showSyncError(DatabaseManager databaseManager) {
         if (databaseManager.isUserConnected()) {
             if (!databaseManager.isAdmin()) {
@@ -107,6 +127,14 @@ public class MainWindowController {
                     "Vous devez être connecté pour effectuer cette action.");
         }
     }
+
+    /**
+     * Cette méthode permet d'exporter les données de la table dans un document
+     * Word.
+     * 
+     * @param primaryStage
+     * @param tableView
+     */
 
     public void exportDocumentToWord(Stage primaryStage, LivreTableView tableView) {
         if (!tableView.getItems().isEmpty()) {
@@ -132,6 +160,13 @@ public class MainWindowController {
         }
     }
 
+    /**
+     * Cette méthode gère la connexion de l'utilisateur.
+     * 
+     * @param primaryStage
+     * @param databaseManager
+     * @return
+     */
     public boolean handleUserAdminConnection(Stage primaryStage, DatabaseManager databaseManager) {
         if (databaseManager.isUserConnected()) {
             if (databaseManager.isAdmin()) {
