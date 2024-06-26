@@ -2,6 +2,7 @@ package org.example.biblio_projet_java.view;
 
 import org.example.biblio_projet_java.Bibliotheque;
 import org.example.biblio_projet_java.Bibliotheque.Livre;
+import org.example.biblio_projet_java.controller.DatabaseManager;
 
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -71,7 +72,7 @@ public class LivreTableView extends TableView<Bibliotheque.Livre> {
                     @Override
                     public void updateItem(Void item, boolean empty) {
                         super.updateItem(item, empty);
-                        if (empty) {
+                        if (empty || !DatabaseManager.isAdmin()) {
                             setGraphic(null);
                         } else {
                             setGraphic(deleteButton);

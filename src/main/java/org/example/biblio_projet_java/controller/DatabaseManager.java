@@ -51,7 +51,7 @@ public class DatabaseManager {
         }
     }
     private Connection connection;
-    private String usertype;
+    private static String usertype;
     private String username;
     private boolean isUserLoggedIn = false;
 
@@ -340,7 +340,7 @@ public class DatabaseManager {
         return username != null;
     }
 
-    public boolean isAdmin() {
+    public static boolean isAdmin() {
         return "admin".equals(usertype);
     }
 
