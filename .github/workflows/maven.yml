@@ -47,7 +47,7 @@ jobs:
         run: mvn cyclonedx:makeAggregateBom
       
       - name: Verify SBOM
-        run: mvn cyclonedx:verify
+        run: mvn verify
       
       - name: Upload SBOM
         uses: actions/upload-artifact@v2
