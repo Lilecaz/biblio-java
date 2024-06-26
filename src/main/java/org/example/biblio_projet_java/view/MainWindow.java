@@ -145,7 +145,7 @@ public class MainWindow extends Application {
         Scene scene = new Scene(root, 800, 600);
         scene.getStylesheets().add(getClass().getResource("/styles.css").toExternalForm());
 
-        primaryStage.setTitle("Biblio");
+        primaryStage.setTitle("BookTrack");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
@@ -195,6 +195,7 @@ public class MainWindow extends Application {
         connectMenuItem.getStyleClass().add("menu-item");
 
         MenuItem menuItem5 = new MenuItem("Infos");
+        menuItem5.setOnAction(event -> showInfoDialog());
         menuItem5.getStyleClass().add("menu-item");
 
         MenuItem syncMenuItem = new MenuItem("Synchroniser");
@@ -328,6 +329,18 @@ public class MainWindow extends Application {
         if (rep) {
             showMainWindow(primaryStage, null, databaseManager.isAdmin());
         }
+    }
+
+    private void showInfoDialog() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Informations");
+        alert.setHeaderText(null);
+        alert.setContentText(
+                "Nom de l'application : BookTrack\n" +
+                        "Createurs : Hajar KASS - Celil YILMAZ - Pavel BARBARIN\n" +
+                        "Version de l'application : 0.3\n" +
+                        "Version Java : 17\n");
+        alert.showAndWait();
     }
 
     public static void main(String[] args) {
