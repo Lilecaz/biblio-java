@@ -16,42 +16,39 @@ import javafx.util.Pair;
 
 public class UserController {
     private static DatabaseManager databaseManager;
-        /**
+
+    /**
      * Constructeur du contrôleur de l'utilisateur.
      *
-     * @param databaseManager Gestionnaire de la base de données pour la communication avec la base de données.
+     * @param databaseManager Gestionnaire de la base de données pour la
+     *                        communication avec la base de données.
      */
 
     public UserController(DatabaseManager databaseManager) {
         this.databaseManager = databaseManager;
     }
 
-
     /**
      * Méthode pour gérer l'inscription ou la connexion d'un utilisateur.
      *
-     * @param result       Paire contenant le nom d'utilisateur et le mot de passe saisis.
-     * @param databaseManager Gestionnaire de la base de données pour exécuter les opérations.
-     * @param isSignUp     Boolean indiquant s'il s'agit d'une inscription (true) ou d'une connexion (false).
+     * @param result          Paire contenant le nom d'utilisateur et le mot de
+     *                        passe saisis.
+     * @param databaseManager Gestionnaire de la base de données pour exécuter les
+     *                        opérations.
+     * @param isSignUp        Boolean indiquant s'il s'agit d'une inscription (true)
+     *                        ou d'une connexion (false).
      * @return true si l'opération est réussie, sinon false.
      */
 
-    public boolean Loger(Optional<Pair<String, String>> result, DatabaseManager databaseManager,
-            boolean isSignUp) {
+    public boolean Loger(Optional<Pair<String, String>> result, DatabaseManager databaseManager, boolean isSignUp) {
         result.ifPresent(credentials -> {
             String usernameText = credentials.getKey();
             String passwordText = credentials.getValue();
             try {
-                if ((isSignUp ? databaseManager.registerUser(usernameText, passwordText)
-                        : databaseManager.loginUser(usernameText, passwordText))) {
-                    AlertUtils.showAlert(Alert.AlertType.INFORMATION,
-                            (isSignUp ? "Inscription réussie" : "Connexion réussie"),
-                            "Vous êtes maintenant " + (isSignUp ? "inscrit" : "connecté") + ".");
-                    databaseManager.setUserLoggedIn(true);
+                if (isSignUp) {
+                    handleSignUp(usernameText, passwordText, databaseManager);
                 } else {
-                    AlertUtils.showAlert(Alert.AlertType.ERROR,
-                            (isSignUp ? "Échec de l'inscription" : "Échec de la connexion"),
-                            "Nom d'utilisateur ou mot de passe incorrect.");
+                    handleLogin(usernameText, passwordText, databaseManager);
                 }
             } catch (SQLException e) {
                 AlertUtils.showAlert(Alert.AlertType.ERROR, "Erreur", "Une erreur s'est produite.");
@@ -59,14 +56,36 @@ public class UserController {
         });
         return true;
     }
+
+    private void handleSignUp(String username, String password, DatabaseManager databaseManager) throws SQLException {
+        if (databaseManager.registerUser(username, password)) {
+            AlertUtils.showAlert(Alert.AlertType.INFORMATION, "Inscription réussie", "Vous êtes maintenant inscrit.");
+            databaseManager.setUserLoggedIn(true);
+        } else {
+            AlertUtils.showAlert(Alert.AlertType.ERROR, "Échec de l'inscription",
+                    "Nom d'utilisateur ou mot de passe incorrect.");
+        }
+    }
+
+    private void handleLogin(String username, String password, DatabaseManager databaseManager) throws SQLException {
+        if (databaseManager.loginUser(username, password)) {
+            AlertUtils.showAlert(Alert.AlertType.INFORMATION, "Connexion réussie", "Vous êtes maintenant connecté.");
+            databaseManager.setUserLoggedIn(true);
+        } else {
+            AlertUtils.showAlert(Alert.AlertType.ERROR, "Échec de la connexion",
+                    "Nom d'utilisateur ou mot de passe incorrect.");
+        }
+    }
+
     /**
-     * Configure le contenu de la boîte de dialogue d'inscription avec les champs requis.
+     * Configure le contenu de la boîte de dialogue d'inscription avec les champs
+     * requis.
      *
-     * @param dialog           Boîte de dialogue pour l'inscription.
-     * @param grid             Grille contenant les champs de saisie.
-     * @param username         Champ de texte pour le nom d'utilisateur.
-     * @param password         Champ de texte pour le mot de passe.
-     * @param confirmPassword  Champ de texte pour la confirmation du mot de passe.
+     * @param dialog          Boîte de dialogue pour l'inscription.
+     * @param grid            Grille contenant les champs de saisie.
+     * @param username        Champ de texte pour le nom d'utilisateur.
+     * @param password        Champ de texte pour le mot de passe.
+     * @param confirmPassword Champ de texte pour la confirmation du mot de passe.
      */
     public static void configureDialog(Dialog<Pair<String, String>> dialog, GridPane grid, TextField username,
             PasswordField password, PasswordField confirmPassword) {
@@ -83,14 +102,15 @@ public class UserController {
         });
     }
 
-     /**
-     * Configure le contenu de la  boîte de dialogue de connexion avec les champs requis.
+    /**
+     * Configure le contenu de la boîte de dialogue de connexion avec les champs
+     * requis.
      *
-     * @param dialog           Boîte de dialogue pour la connexion.
-     * @param loginButtonType  Type de bouton pour la connexion.
-     * @param grid             Grille contenant les champs de saisie.
-     * @param username         Champ de texte pour le nom d'utilisateur.
-     * @param password         Champ de texte pour le mot de passe.
+     * @param dialog          Boîte de dialogue pour la connexion.
+     * @param loginButtonType Type de bouton pour la connexion.
+     * @param grid            Grille contenant les champs de saisie.
+     * @param username        Champ de texte pour le nom d'utilisateur.
+     * @param password        Champ de texte pour le mot de passe.
      */
     public static void configureDialog(Dialog<Pair<String, String>> dialog, ButtonType loginButtonType, GridPane grid,
             TextField username, PasswordField password) {
@@ -103,10 +123,11 @@ public class UserController {
         });
     }
 
-     /**
-     * Méthode de gestionnaire pour la tentative de connexion avec les informations fournies.
+    /**
+     * Méthode de gestionnaire pour la tentative de connexion avec les informations
+     * fournies.
      *
-     * @param credentials  Paire contenant le nom d'utilisateur et le mot de passe.
+     * @param credentials Paire contenant le nom d'utilisateur et le mot de passe.
      */
     public static void loginHandler(Pair<String, String> credentials) {
         try {

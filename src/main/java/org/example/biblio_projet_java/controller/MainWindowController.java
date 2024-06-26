@@ -26,6 +26,11 @@ public class MainWindowController {
         // Constructeur par défaut
     }
 
+    private static final String SEND_LOCAL_DATA = "Envoyer les données locales";
+    private static final String RETRIEVE_SERVER_DATA = "Récupérer les données du serveur";
+    private static final String SYNCHRONIZATION = "Synchronisation";
+    private static final String ERROR = "Erreur";
+
     /**
      * Cette méthode permet de synchroniser les données locales avec le serveur ou
      * du serveur vers un XML.
@@ -40,9 +45,9 @@ public class MainWindowController {
         if (!result.isPresent())
             return false;
 
-        if (result.get().getText().equals("Envoyer les données locales")) {
+        if (result.get().getText().equals(SEND_LOCAL_DATA)) {
             return handleLocalDataSend(primaryStage, databaseManager, tableView);
-        } else if (result.get().getText().equals("Récupérer les données du serveur")) {
+        } else if (result.get().getText().equals(RETRIEVE_SERVER_DATA)) {
             return handleServerDataRetrieval(primaryStage, tableView);
         }
 
@@ -51,23 +56,23 @@ public class MainWindowController {
 
     private Optional<ButtonType> showSyncChoiceAlert() {
         Alert syncChoiceAlert = new Alert(Alert.AlertType.CONFIRMATION, "Choisissez votre option.",
-                new ButtonType("Envoyer les données locales"),
-                new ButtonType("Récupérer les données du serveur"),
+                new ButtonType(SEND_LOCAL_DATA),
+                new ButtonType(RETRIEVE_SERVER_DATA),
                 new ButtonType("Annuler", ButtonBar.ButtonData.CANCEL_CLOSE));
-        syncChoiceAlert.setTitle("Synchronisation");
+        syncChoiceAlert.setTitle(SYNCHRONIZATION);
         syncChoiceAlert.setHeaderText(
                 "Voulez-vous envoyer les données locales au serveur ou récupérer les données du serveur ?");
         return syncChoiceAlert.showAndWait();
     }
 
     private boolean handleLocalDataSend(Stage primaryStage, DatabaseManager databaseManager, LivreTableView tableView) {
-        File selectedFile = showFileChooser(primaryStage, "Envoyer les données locales", "*.xml", "XML files (*.xml)");
+        File selectedFile = showFileChooser(primaryStage, SEND_LOCAL_DATA, "*.xml", "XML files (*.xml)");
         if (selectedFile == null)
             return false;
 
         File loadedFile = XMLFileManager.chargerFichierXML(selectedFile, tableView);
         if (loadedFile == null) {
-            AlertUtils.showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors du chargement du fichier XML.");
+            AlertUtils.showAlert(Alert.AlertType.ERROR, ERROR, "Erreur lors du chargement du fichier XML.");
             return false;
         }
 
@@ -81,12 +86,14 @@ public class MainWindowController {
 
         boolean success = XMLFileManager.sauvegarderFichierXML(selectedFile, tableView.getItems());
         if (!success) {
-            AlertUtils.showAlert(Alert.AlertType.ERROR, "Erreur",
+            AlertUtils.showAlert(Alert.AlertType.ERROR,
+                    ERROR,
                     "Erreur lors de la sauvegarde des données dans le fichier XML.");
             return false;
         }
 
-        AlertUtils.showAlert(Alert.AlertType.INFORMATION, "Synchronisation",
+        AlertUtils.showAlert(Alert.AlertType.INFORMATION,
+                SYNCHRONIZATION,
                 "Données sauvegardées avec succès dans le fichier XML.");
         return true;
     }
@@ -116,10 +123,11 @@ public class MainWindowController {
                 showSyncError(databaseManager);
                 return false;
             }
-            AlertUtils.showAlert(Alert.AlertType.INFORMATION, "Synchronisation", "Données envoyées avec succès.");
+            AlertUtils.showAlert(Alert.AlertType.INFORMATION, SYNCHRONIZATION, "Données envoyées avec succès.");
             return true;
         } catch (SQLException e) {
-            AlertUtils.showAlert(Alert.AlertType.ERROR, "Erreur",
+            AlertUtils.showAlert(Alert.AlertType.ERROR,
+                    ERROR,
                     "Erreur lors de la synchronisation des données : " + e.getMessage());
             return false;
         }
@@ -134,14 +142,17 @@ public class MainWindowController {
     private void showSyncError(DatabaseManager databaseManager) {
         if (databaseManager.isUserConnected()) {
             if (!databaseManager.isAdmin()) {
-                AlertUtils.showAlert(Alert.AlertType.ERROR, "Erreur",
+                AlertUtils.showAlert(Alert.AlertType.ERROR,
+                        ERROR,
                         "Vous n'avez pas les autorisations nécessaires pour effectuer cette action.");
             } else {
-                AlertUtils.showAlert(Alert.AlertType.ERROR, "Erreur",
+                AlertUtils.showAlert(Alert.AlertType.ERROR,
+                        ERROR,
                         "Erreur lors de l'envoi des données : Vous n'êtes pas connecté.");
             }
         } else {
-            AlertUtils.showAlert(Alert.AlertType.ERROR, "Erreur",
+            AlertUtils.showAlert(Alert.AlertType.ERROR,
+                    ERROR,
                     "Vous devez être connecté pour effectuer cette action.");
         }
     }
