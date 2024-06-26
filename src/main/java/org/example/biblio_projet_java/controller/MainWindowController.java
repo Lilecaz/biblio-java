@@ -20,6 +20,15 @@ public class MainWindowController {
     public MainWindowController() {
     }
 
+    /**
+     * Cette méthode permet de gérer la synchronisation des données entre l'appli
+     * locale et la db
+     * 
+     * @param primaryStage
+     * @param databaseManager
+     * @param tableView
+     * @return
+     */
     public boolean syncData(Stage primaryStage, DatabaseManager databaseManager, LivreTableView tableView) {
         Alert syncChoiceAlert = new Alert(Alert.AlertType.CONFIRMATION);
         syncChoiceAlert.setTitle("Synchronisation");
@@ -93,6 +102,12 @@ public class MainWindowController {
         return false;
     }
 
+    /**
+     * Cette méthode permet d'afficher les alertes lors de la connexion et en
+     * fonction des autorisations du user
+     * 
+     * @param databaseManager
+     */
     private void showSyncError(DatabaseManager databaseManager) {
         if (databaseManager.isUserConnected()) {
             if (!databaseManager.isAdmin()) {
@@ -108,6 +123,12 @@ public class MainWindowController {
         }
     }
 
+    /**
+     * Cette méthode permet d'exporter les données de LivreTableView vers un .doc
+     * 
+     * @param primaryStage
+     * @param tableView
+     */
     public void exportDocumentToWord(Stage primaryStage, LivreTableView tableView) {
         if (!tableView.getItems().isEmpty()) {
             TextInputDialog dialog = new TextInputDialog();
@@ -132,6 +153,14 @@ public class MainWindowController {
         }
     }
 
+    /**
+     * Cette méthode permet de vérifier l'état de connexion du user à la db et son
+     * statut d'admin
+     * 
+     * @param primaryStage
+     * @param databaseManager
+     * @return
+     */
     public boolean handleUserAdminConnection(Stage primaryStage, DatabaseManager databaseManager) {
         if (databaseManager.isUserConnected()) {
             if (databaseManager.isAdmin()) {

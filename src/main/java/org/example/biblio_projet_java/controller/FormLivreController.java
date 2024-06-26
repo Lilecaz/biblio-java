@@ -16,6 +16,11 @@ import javafx.scene.image.ImageView;
 
 public class FormLivreController {
 
+    /**
+     * Cette méthode permet de valider le contenu du TexteField
+     * 
+     * @param parutionField
+     */
     public static void validateParutionField(TextField parutionField) {
         parutionField.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("\\d*")) {
@@ -24,6 +29,11 @@ public class FormLivreController {
         });
     }
 
+    /**
+     * Cette méthode permet de valider le contenu de colonneField
+     * 
+     * @param colonneField
+     */
     public static void filterColonneInput(TextField colonneField) {
         colonneField.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("\\d*")) {
@@ -32,6 +42,11 @@ public class FormLivreController {
         });
     }
 
+    /**
+     * Cette méthode permet de valider le contenu du rangeeField
+     * 
+     * @param rangeeField
+     */
     public static void filterRangeeInput(TextField rangeeField) {
         rangeeField.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("\\d*")) {
@@ -40,6 +55,13 @@ public class FormLivreController {
         });
     }
 
+    /**
+     * Cette méthode permet de mettre à jour previewImageView avec une image à
+     * partir du lien URL saisi dans le champ de texte
+     * 
+     * @param lienField
+     * @param previewImageView
+     */
     public static void handleLinkChange(TextField lienField, ImageView previewImageView) {
         lienField.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.isEmpty()) {
@@ -57,6 +79,23 @@ public class FormLivreController {
         });
     }
 
+    /**
+     * Cette méthode permet de gérer la soumission d'un nouveau livre à ajouter à la
+     * db et à la vue du tableau et de valider les TextField et controler l'ajout
+     * d'un livre
+     * 
+     * @param tableView
+     * @param dbManager
+     * @param titreField
+     * @param auteurField
+     * @param presentationField
+     * @param parutionField
+     * @param colonneField
+     * @param rangeeField
+     * @param empruntCheckBox
+     * @param resumeArea
+     * @param lienField
+     */
     public static void handleNewBookSubmission(LivreTableView tableView, DatabaseManager dbManager,
             TextField titreField,
             TextField auteurField, TextField presentationField, TextField parutionField, TextField colonneField,
@@ -100,6 +139,20 @@ public class FormLivreController {
         }
     }
 
+    /**
+     * Cett méthode permet de valider les TextField (champs obligatoires)
+     * 
+     * @param titreField
+     * @param auteurField
+     * @param presentationField
+     * @param parutionField
+     * @param colonneField
+     * @param rangeeField
+     * @param empruntCheckBox
+     * @param resumeArea
+     * @param lienField
+     * @return
+     */
     private static boolean validateFields(TextField titreField, TextField auteurField, TextField presentationField,
             TextField parutionField, TextField colonneField, TextField rangeeField, CheckBox empruntCheckBox,
             TextArea resumeArea, TextField lienField) {
@@ -135,6 +188,16 @@ public class FormLivreController {
         return true;
     }
 
+    /**
+     * Cette méthode permet de vérifier si un livre avec le même titre, même auteur
+     * et même année de parution existe déjà
+     * 
+     * @param tableView
+     * @param titreField
+     * @param auteurField
+     * @param parutionField
+     * @return
+     */
     public static boolean alreadyExists(LivreTableView tableView, TextField titreField, TextField auteurField,
             TextField parutionField) {
         String nomLivre = titreField.getText();
@@ -152,6 +215,20 @@ public class FormLivreController {
         return false;
     }
 
+    /**
+     * Cette méthode permet d'effacer le contenu des champs de saisie et de la zone
+     * de texte spécifiés
+     * 
+     * @param titreField
+     * @param auteurField
+     * @param presentationField
+     * @param parutionField
+     * @param colonneField
+     * @param rangeeField
+     * @param empruntCheckBox
+     * @param resumeArea
+     * @param lienField
+     */
     private static void clearFields(TextField titreField, TextField auteurField, TextField presentationField,
             TextField parutionField, TextField colonneField, TextField rangeeField, CheckBox empruntCheckBox,
             TextArea resumeArea, TextField lienField) {
