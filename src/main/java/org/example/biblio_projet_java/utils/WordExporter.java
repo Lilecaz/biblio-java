@@ -48,7 +48,7 @@ public class WordExporter {
             addTitlePage(titreDocument);
 
             // Ajouter le sommaire
-            addTableOfContent();
+            addTableOfContent(livres);
 
             // Ajouter les livres
             addLivres(livres);
@@ -99,25 +99,44 @@ public class WordExporter {
      * Le sommaire est créé avec le titre "Table des matières" et contient les
      * styles personnalisés "heading 1" et "heading 2".
      */
-    private void addTableOfContent() {
+    private void addTableOfContent(List<Livre> livres) {
         // Créer le sommaire
         XWPFParagraph tocParagraph = document.createParagraph();
         CTSimpleField toc = tocParagraph.getCTP().addNewFldSimple();
         toc.setInstr("TOC \\o \"1-3\" \\h \\z \\u");
         toc.setDirty(STOnOff1.ON);
-
+    
         // Ajouter un run au paragraphe pour le texte du sommaire
         XWPFRun tocRun = tocParagraph.createRun();
         tocRun.setText("Table des matières");
         tocRun.setBold(true);
-
+    
         // Ajouter un saut de page après le sommaire
         tocParagraph.setPageBreak(true);
-
+    
         // Ajouter les styles personnalisés
         addCustomHeadingStyle(document, "heading 1", 1);
         addCustomHeadingStyle(document, "heading 2", 2);
+    
+        // Ajouter une entrée pour les livres empruntés
+        XWPFParagraph empruntParagraph = document.createParagraph();
+        empruntParagraph.setStyle("heading 1"); // Utiliser le style heading 1 pour cette entrée
+    
+        XWPFRun empruntRun = empruntParagraph.createRun();
+        empruntRun.setText("Livres empruntés :");
+    
+        // Parcourir la liste des livres pour ajouter les titres des livres empruntés
+        for (Livre livre : livres) {
+            if (livre.isEmprunt()) {
+                XWPFParagraph titreParagraph = document.createParagraph();
+                titreParagraph.setStyle("heading 2"); // Utiliser le style heading 2 pour les titres des livres empruntés
+    
+                XWPFRun titreRun = titreParagraph.createRun();
+                titreRun.setText(livre.getTitre());
+            }
+        }
     }
+    
 
     /**
      * Ajoute les livres à un document Word.
