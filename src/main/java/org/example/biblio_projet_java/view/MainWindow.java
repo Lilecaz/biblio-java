@@ -256,7 +256,7 @@ public class MainWindow extends Application {
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichiers XML", "*.xml"));
         File selectedFile = fileChooser.showSaveDialog(primaryStage);
         if (selectedFile != null) {
-            currentFile = XMLFileManager.sauvegarderFichierXML(selectedFile, tableView.getItems());
+            XMLFileManager.sauvegarderFichierXML(selectedFile, tableView.getItems());
         }
     }
 
